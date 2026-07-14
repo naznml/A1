@@ -6741,3 +6741,5574 @@ But if we choose the right kind of energy in the right place, we will have good,
 
             </div>
           </div>
+                      <!-- GRAMMAR RESULT ACTIONS -->
+
+          <div class="result-actions">
+
+            <button
+              type="button"
+              class="primary-button"
+              id="show-grammar-result"
+            >
+              <span class="language-content lang-kk">
+                Нәтижені көрсету
+              </span>
+
+              <span class="language-content lang-ru">
+                Показать результат
+              </span>
+            </button>
+
+            <button
+              type="button"
+              class="secondary-button"
+              id="reset-grammar-test"
+            >
+              <span class="language-content lang-kk">
+                Жауаптарды тазарту
+              </span>
+
+              <span class="language-content lang-ru">
+                Очистить ответы
+              </span>
+            </button>
+
+          </div>
+
+          <div
+            class="block-result"
+            id="grammar-result"
+          >
+            <strong>
+              <span class="language-content lang-kk">
+                Grammar нәтижесі:
+              </span>
+
+              <span class="language-content lang-ru">
+                Результат Grammar:
+              </span>
+
+              <span id="grammar-score">0/18</span>
+            </strong>
+
+            <p id="grammar-result-message"></p>
+          </div>
+
+        </form>
+
+      </article>
+
+    </section>
+
+    <!-- READING БЛОГЫ ОСЫ ЖЕРДЕН БАСТАЛАДЫ -->
+    <!-- РАЗДЕЛ READING БУДЕТ ВСТАВЛЕН СЮДА -->
+
+    <script>
+      let grammarScore = null;
+
+      const grammarTotalQuestions = 18;
+
+      function getGrammarResultMessage(score, total) {
+        const percentage = Math.round((score / total) * 100);
+        const language = getCurrentLanguage();
+
+        if (language === "kk") {
+          if (percentage === 100) {
+            return "Өте жақсы! Grammar бөліміндегі барлық жауап дұрыс.";
+          }
+
+          if (percentage >= 75) {
+            return "Жақсы нәтиже! Қате жауаптардың түсіндірмесін қайталаңыз.";
+          }
+
+          if (percentage >= 50) {
+            return "Орташа нәтиже. Грамматикалық ережелер мен формулаларды мұқият қараңыз.";
+          }
+
+          return "Grammar бөлімін қайта қарап, әр сұрақтың түсіндірмесін оқыңыз.";
+        }
+
+        if (percentage === 100) {
+          return "Отлично! Все ответы в разделе Grammar правильные.";
+        }
+
+        if (percentage >= 75) {
+          return "Хороший результат! Повторите объяснения к ошибочным ответам.";
+        }
+
+        if (percentage >= 50) {
+          return "Средний результат. Внимательно изучите правила и формулы.";
+        }
+
+        return "Повторите раздел Grammar и прочитайте объяснение к каждому вопросу.";
+      }
+
+      function showGrammarResult() {
+        const grammarQuestions = document.querySelectorAll(
+          "#grammar-test-form .grammar-question"
+        );
+
+        let score = 0;
+
+        grammarQuestions.forEach((questionCard) => {
+          const correctAnswer = questionCard.dataset.correct;
+
+          const selectedInput = questionCard.querySelector(
+            'input[type="radio"]:checked'
+          );
+
+          const answerOptions = questionCard.querySelectorAll(
+            ".answer-option"
+          );
+
+          answerOptions.forEach((option) => {
+            option.classList.remove(
+              "correct-answer",
+              "wrong-answer"
+            );
+
+            const optionValue = option.dataset.option;
+
+            if (optionValue === correctAnswer) {
+              option.classList.add("correct-answer");
+            }
+
+            if (
+              selectedInput &&
+              optionValue === selectedInput.value &&
+              selectedInput.value !== correctAnswer
+            ) {
+              option.classList.add("wrong-answer");
+            }
+          });
+
+          if (
+            selectedInput &&
+            selectedInput.value === correctAnswer
+          ) {
+            score++;
+          }
+
+          const explanation = questionCard.querySelector(
+            ".question-explanation"
+          );
+
+          if (explanation) {
+            explanation.classList.add("visible");
+          }
+
+          questionCard
+            .querySelectorAll('input[type="radio"]')
+            .forEach((input) => {
+              input.disabled = true;
+            });
+        });
+
+        grammarScore = score;
+
+        const scoreElement = document.getElementById(
+          "grammar-score"
+        );
+
+        const messageElement = document.getElementById(
+          "grammar-result-message"
+        );
+
+        const resultBox = document.getElementById(
+          "grammar-result"
+        );
+
+        if (scoreElement) {
+          scoreElement.textContent =
+            `${score}/${grammarTotalQuestions}`;
+        }
+
+        if (messageElement) {
+          messageElement.textContent =
+            getGrammarResultMessage(
+              score,
+              grammarTotalQuestions
+            );
+        }
+
+        if (resultBox) {
+          resultBox.classList.add("visible");
+
+          resultBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+
+        updateEnglishTotalResult();
+      }
+
+      function resetGrammarTest() {
+        const grammarQuestions = document.querySelectorAll(
+          "#grammar-test-form .grammar-question"
+        );
+
+        grammarQuestions.forEach((questionCard) => {
+          questionCard
+            .querySelectorAll(".answer-option")
+            .forEach((option) => {
+              option.classList.remove(
+                "correct-answer",
+                "wrong-answer"
+              );
+            });
+
+          questionCard
+            .querySelectorAll('input[type="radio"]')
+            .forEach((input) => {
+              input.checked = false;
+              input.disabled = false;
+            });
+
+          const explanation = questionCard.querySelector(
+            ".question-explanation"
+          );
+
+          if (explanation) {
+            explanation.classList.remove("visible");
+          }
+        });
+
+        grammarScore = null;
+
+        const resultBox = document.getElementById(
+          "grammar-result"
+        );
+
+        const scoreElement = document.getElementById(
+          "grammar-score"
+        );
+
+        const messageElement = document.getElementById(
+          "grammar-result-message"
+        );
+
+        if (resultBox) {
+          resultBox.classList.remove("visible");
+        }
+
+        if (scoreElement) {
+          scoreElement.textContent = "0/18";
+        }
+
+        if (messageElement) {
+          messageElement.textContent = "";
+        }
+
+        updateEnglishTotalResult();
+
+        document
+          .getElementById("grammar-section")
+          .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+      }
+
+      document
+        .getElementById("show-grammar-result")
+        .addEventListener(
+          "click",
+          showGrammarResult
+        );
+
+      document
+        .getElementById("reset-grammar-test")
+        .addEventListener(
+          "click",
+          resetGrammarTest
+        );
+
+      function updateEnglishTotalResult() {
+        const listeningTotal =
+          (listeningScores[1] ?? 0) +
+          (listeningScores[2] ?? 0);
+
+        const grammarTotal =
+          grammarScore ?? 0;
+
+        const readingTotal =
+          typeof readingScore !== "undefined" &&
+          readingScore !== null
+            ? readingScore
+            : 0;
+
+        const totalScore =
+          listeningTotal +
+          grammarTotal +
+          readingTotal;
+
+        const totalElement = document.getElementById(
+          "english-total-score"
+        );
+
+        if (totalElement) {
+          totalElement.textContent =
+            `${totalScore}/50`;
+        }
+
+        const grammarTotalElement =
+          document.getElementById(
+            "english-grammar-score"
+          );
+
+        if (grammarTotalElement) {
+          grammarTotalElement.textContent =
+            `${grammarTotal}/18`;
+        }
+
+        const listeningTotalElement =
+          document.getElementById(
+            "english-listening-score"
+          );
+
+        if (listeningTotalElement) {
+          listeningTotalElement.textContent =
+            `${listeningTotal}/16`;
+        }
+
+        const readingTotalElement =
+          document.getElementById(
+            "english-reading-score"
+          );
+
+        if (readingTotalElement) {
+          readingTotalElement.textContent =
+            `${readingTotal}/16`;
+        }
+      }
+
+      const originalUpdateAllResultMessages =
+        updateAllResultMessages;
+
+      updateAllResultMessages = function () {
+        originalUpdateAllResultMessages();
+
+        if (grammarScore !== null) {
+          const grammarMessage =
+            document.getElementById(
+              "grammar-result-message"
+            );
+
+          if (grammarMessage) {
+            grammarMessage.textContent =
+              getGrammarResultMessage(
+                grammarScore,
+                grammarTotalQuestions
+              );
+          }
+        }
+
+        updateEnglishTotalResult();
+      };
+    </script>
+
+    <!-- ОСЫ ЖЕРДЕН КЕЙІН READING КОДЫН ҚОСАМЫЗ -->
+    <!-- ПОСЛЕ ЭТОЙ СТРОКИ ДОБАВЛЯЕМ КОД READING -->
+        <!-- READING SECTION -->
+
+    <section
+      class="main-section"
+      id="reading-section"
+    >
+
+      <div class="section-heading">
+        <h2>Reading</h2>
+
+        <p>
+          <span class="language-content lang-kk">
+            Мәтінді оқып, дұрыс жауапты таңдаңыз.
+            Нәтижені көрсеткеннен кейін дұрыс жауаптар,
+            түсіндірмелер және мәтіндегі дәлелдер көрсетіледі.
+          </span>
+
+          <span class="language-content lang-ru">
+            Прочитайте текст и выберите правильный ответ.
+            После показа результата появятся правильные ответы,
+            объяснения и доказательства в тексте.
+          </span>
+        </p>
+      </div>
+
+      <!-- READING 1 -->
+
+      <article
+        class="listening-card reading-card"
+        id="reading-1"
+        data-reading-id="1"
+      >
+
+        <div class="listening-number">
+          Reading 1 · Questions 35–42
+        </div>
+
+        <h2 class="listening-title">
+          Yellowstone National Park
+        </h2>
+
+        <div class="tab-buttons">
+
+          <button
+            type="button"
+            class="tab-button active"
+            data-tab-target="reading-1-test"
+          >
+            Test
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-1-text"
+          >
+            Text
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-1-translation"
+          >
+            <span class="language-content lang-kk">
+              Аударма
+            </span>
+
+            <span class="language-content lang-ru">
+              Перевод
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-1-vocabulary"
+          >
+            Vocabulary
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-1-strategy"
+          >
+            <span class="language-content lang-kk">
+              Қалай орындау керек
+            </span>
+
+            <span class="language-content lang-ru">
+              Как решить
+            </span>
+          </button>
+
+        </div>
+
+        <!-- READING 1 TEST -->
+
+        <div
+          class="tab-panel active"
+          id="reading-1-test"
+        >
+
+          <p class="test-instruction">
+            <span class="language-content lang-kk">
+              Әр сұрақ бойынша бір дұрыс жауапты таңдаңыз.
+              Нәтижені көрсеткеннен кейін дұрыс жауап жасыл,
+              ал таңдалған қате жауап қызыл түспен белгіленеді.
+            </span>
+
+            <span class="language-content lang-ru">
+              Выберите один правильный ответ в каждом вопросе.
+              После показа результата правильный ответ будет выделен
+              зелёным, а выбранный неправильный — красным.
+            </span>
+          </p>
+
+          <form
+            class="reading-test-form"
+            id="reading-1-test-form"
+          >
+
+            <!-- QUESTION 35 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="35"
+              data-correct="A"
+            >
+
+              <span class="question-number">
+                Question 35
+              </span>
+
+              <p class="question-text">
+                The backpacks, sleeping bags are needed for a
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question35"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>a camping trip</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question35"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>a seaside trip</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question35"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>a running marathon</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question35"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>an extreme travel</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: A) a camping trip
+                  </h4>
+
+                  <p>
+                    Мәтінде Лиза мен оның достары camping trip үшін
+                    рюкзактар, ұйықтайтын қаптар, тамақ пен сусындар
+                    салынған тоңазытқыш алып келгені айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “For their camping trip, they brought their
+                    backpacks, sleeping bags, and a cooler of food
+                    and drinks.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: A) a camping trip
+                  </h4>
+
+                  <p>
+                    В тексте говорится, что Лиза и её друзья взяли
+                    рюкзаки и спальные мешки именно для поездки
+                    с палатками.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “For their camping trip, they brought their
+                    backpacks, sleeping bags, and a cooler of food
+                    and drinks.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 36 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="36"
+              data-correct="B"
+            >
+
+              <span class="question-number">
+                Question 36
+              </span>
+
+              <p class="question-text">
+                Yellowstone National Park is a popular destination situated in
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question36"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>Australia</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question36"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>America</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question36"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>New Zealand</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question36"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>Canada</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: B) America
+                  </h4>
+
+                  <p>
+                    Yellowstone National Park Америка Құрама
+                    Штаттарындағы алғашқы ұлттық саябақ ретінде
+                    құрылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Yellowstone National Park, located in Idaho,
+                    Montana, and Wyoming, was established as the first
+                    national park in the United States.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: B) America
+                  </h4>
+
+                  <p>
+                    Парк расположен в штатах Айдахо, Монтана и Вайоминг
+                    и был создан как первый национальный парк
+                    Соединённых Штатов.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Yellowstone National Park, located in Idaho,
+                    Montana, and Wyoming, was established as the first
+                    national park in the United States.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 37 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="37"
+              data-correct="C"
+            >
+
+              <span class="question-number">
+                Question 37
+              </span>
+
+              <p class="question-text">
+                Lisa and her friends waited for the geyser eruption for
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question37"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>about two hours</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question37"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>an hour and half</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question37"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>nearly an hour</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question37"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>half an hour</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) nearly an hour
+                  </h4>
+
+                  <p>
+                    Олар шамамен 40 минут күткен. Қырық минут бір сағатқа
+                    жақын болғандықтан, nearly an hour дұрыс жауап болады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “After about 40 minutes, a stream of boiling water
+                    over 100 feet tall sprayed from the ground...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) nearly an hour
+                  </h4>
+
+                  <p>
+                    Они ждали около 40 минут. Это ближе всего
+                    к значению «почти час».
+                  </p>
+
+                  <p class="evidence-quote">
+                    “After about 40 minutes, a stream of boiling water
+                    over 100 feet tall sprayed from the ground...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 38 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="38"
+              data-correct="B"
+            >
+
+              <span class="question-number">
+                Question 38
+              </span>
+
+              <p class="question-text">
+                View of Yellowstone's natural cascades is
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question38"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>usual</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question38"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>amazing</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question38"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>frightening</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question38"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>scary</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: B) amazing
+                  </h4>
+
+                  <p>
+                    Мәтінде олар табиғи сарқырамалардың сұлулығына
+                    таңданғаны айтылған. Admired the beauty мағынасы
+                    amazing жауабына сәйкес келеді.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Outside of the woods, they admired the beauty
+                    of some of Yellowstone's natural cascades.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: B) amazing
+                  </h4>
+
+                  <p>
+                    Они восхищались красотой природных каскадов.
+                    Поэтому их вид был удивительным, а не пугающим.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Outside of the woods, they admired the beauty
+                    of some of Yellowstone's natural cascades.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 39 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="39"
+              data-correct="B"
+            >
+
+              <span class="question-number">
+                Question 39
+              </span>
+
+              <p class="question-text">
+                Lisa and her friends hiked the trails of the park in order to see
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question39"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>wild birds of the park</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question39"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>surroundings</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question39"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>high mountains of the park</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question39"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>amazing geysers of the park</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: B) surroundings
+                  </h4>
+
+                  <p>
+                    Мәтінде олар саябақ жолдарымен оның табиғи ортасын
+                    зерттеу үшін жүргені тікелей айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “During their trip, Lisa and her friends hiked
+                    the trails of the park, exploring its natural
+                    surroundings.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: B) surroundings
+                  </h4>
+
+                  <p>
+                    В тексте прямо сказано, что они ходили по тропам,
+                    исследуя природные окрестности парка.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “During their trip, Lisa and her friends hiked
+                    the trails of the park, exploring its natural
+                    surroundings.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 40 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="40"
+              data-correct="B"
+            >
+
+              <span class="question-number">
+                Question 40
+              </span>
+
+              <p class="question-text">
+                The text tells about
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question40"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>ecological tourism and its development</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question40"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>abundance of the park's nature and impression of tourists</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question40"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>abundance of wild animals and birds</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question40"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>interference of humans with nature</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: B) abundance of the park's nature and impression of tourists
+                  </h4>
+
+                  <p>
+                    Мәтінде саябақтың ормандары, таулары, жануарлары,
+                    сарқырамалары, ыстық бұлақтары мен гейзерлері
+                    сипатталады. Сонымен қатар Лиза мен достарының
+                    алған әсері баяндалады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    The text describes Yellowstone's nature,
+                    wildlife, cascades, hot springs and geysers,
+                    together with Lisa and her friends' experience.
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: B) abundance of the park's nature and impression of tourists
+                  </h4>
+
+                  <p>
+                    Текст описывает богатую природу парка, животных,
+                    водопады, горячие источники и гейзеры, а также
+                    впечатления Лизы и её друзей.
+                  </p>
+
+                  <p class="evidence-quote">
+                    The text describes Yellowstone's nature,
+                    wildlife, cascades, hot springs and geysers,
+                    together with Lisa and her friends' experience.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 41 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="41"
+              data-correct="D"
+            >
+
+              <span class="question-number">
+                Question 41
+              </span>
+
+              <p class="question-text">
+                Lisa and her friends were mostly overwhelmed by
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question41"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>a family of grizzly bears</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question41"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>natural cascades</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question41"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>Boiling River</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question41"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>Old Faithful</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: D) Old Faithful
+                  </h4>
+
+                  <p>
+                    Барлық көрген орындардың ішінде олар Old Faithful
+                    гейзерін ең әсерлі деп санаған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Of all of the sites, Lisa and her friends agreed
+                    that Old Faithful was the most impressive.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: D) Old Faithful
+                  </h4>
+
+                  <p>
+                    Из всех достопримечательностей именно Old Faithful
+                    показался им самым впечатляющим.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Of all of the sites, Lisa and her friends agreed
+                    that Old Faithful was the most impressive.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 42 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="42"
+              data-correct="A"
+            >
+
+              <span class="question-number">
+                Question 42
+              </span>
+
+              <p class="question-text">
+                All of the following is true about Lisa's trip except
+              </p>
+
+              <div class="answer-options">
+
+                <label
+                  class="answer-option"
+                  data-option="A"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question42"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>they showed impatience</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="B"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question42"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>saw a lot of local wildlife</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="C"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question42"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>they saw the eruption of geysers</span>
+                </label>
+
+                <label
+                  class="answer-option"
+                  data-option="D"
+                >
+                  <input
+                    type="radio"
+                    name="reading1-question42"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>they swam in the river</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: A) they showed impatience
+                  </h4>
+
+                  <p>
+                    Сұрақта except сөзі бар, сондықтан мәтінге сәйкес
+                    келмейтін нұсқаны табу керек. Мәтінде олардың
+                    шыдамдылықпен күткені айтылған, яғни олар
+                    шыдамсыздық танытпаған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Lisa and her friends waited patiently for
+                    the geyser to erupt.”
+                  </p>
+
+                  <p>
+                    Қалған нұсқалардың барлығы мәтінде бар:
+                    олар жануарларды көрді, гейзердің атқылауын бақылады
+                    және Boiling River өзенінде жүзді.
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: A) they showed impatience
+                  </h4>
+
+                  <p>
+                    Слово except требует найти утверждение, которое
+                    не соответствует тексту. В тексте сказано,
+                    что они ждали терпеливо, поэтому нетерпения
+                    они не проявляли.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Lisa and her friends waited patiently for
+                    the geyser to erupt.”
+                  </p>
+
+                  <p>
+                    Остальные варианты подтверждаются текстом:
+                    они видели животных, наблюдали извержение гейзера
+                    и плавали в Boiling River.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- READING 1 RESULT BUTTONS -->
+
+            <div class="result-actions">
+
+              <button
+                type="button"
+                class="primary-button show-reading-result"
+                data-reading="1"
+              >
+                <span class="language-content lang-kk">
+                  Нәтижені көрсету
+                </span>
+
+                <span class="language-content lang-ru">
+                  Показать результат
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="secondary-button reset-reading-test"
+                data-reading="1"
+              >
+                <span class="language-content lang-kk">
+                  Жауаптарды тазарту
+                </span>
+
+                <span class="language-content lang-ru">
+                  Очистить ответы
+                </span>
+              </button>
+
+            </div>
+
+            <div
+              class="block-result"
+              id="reading-1-result"
+            >
+              <strong>
+                <span class="language-content lang-kk">
+                  Reading 1 нәтижесі:
+                </span>
+
+                <span class="language-content lang-ru">
+                  Результат Reading 1:
+                </span>
+
+                <span id="reading-1-score">
+                  0/8
+                </span>
+              </strong>
+
+              <p id="reading-1-result-message"></p>
+            </div>
+
+          </form>
+
+        </div>
+                <!-- READING 1 TEXT -->
+
+        <div
+          class="tab-panel"
+          id="reading-1-text"
+        >
+
+          <div class="content-block">
+
+            <h3>Yellowstone National Park</h3>
+
+            <div
+              class="locked-message reading-locked-message"
+              data-reading="1"
+            >
+              <span class="language-content lang-kk">
+                Нәтижені көрсеткеннен кейін мәтіндегі жауап орналасқан
+                сөйлемдер Q35–Q42 белгілерімен ерекшеленеді.
+              </span>
+
+              <span class="language-content lang-ru">
+                После показа результата предложения с ответами
+                будут выделены метками Q35–Q42.
+              </span>
+            </div>
+
+            <div
+              class="reading-text"
+              id="reading-1-text-content"
+            >
+
+              <p>
+                <span
+                  class="reading-answer"
+                  data-related-question="36 40"
+                >
+                  <span class="question-marker">Q36</span>
+                  <span class="question-marker">Q40</span>
+                  Yellowstone National Park, located in Idaho, Montana, and Wyoming, was established as the first national park in the United States.
+                </span>
+
+                The park is a popular destination for visitors who enjoy ecological tourism as it offers forests, mountains, and abundant ecosystems to explore.
+
+                Some of Yellowstone's most well-known landmarks are its geothermal hot springs and geysers, the most famous of which is named Old Faithful.
+              </p>
+
+              <p>
+                Last fall, Lisa and her friends decided to take a camping trip to Yellowstone National Park.
+
+                They arranged to stay at one of the park's many convenient campsites.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="35"
+                >
+                  <span class="question-marker">Q35</span>
+                  For their camping trip, they brought their backpacks, sleeping bags, and a cooler of food and drinks.
+                </span>
+
+                They pitched their tents immediately upon arriving to their campsite.
+              </p>
+
+              <p>
+                <span
+                  class="reading-answer"
+                  data-related-question="39"
+                >
+                  <span class="question-marker">Q39</span>
+                  During their trip, Lisa and her friends hiked the trails of the park, exploring its natural surroundings.
+                </span>
+
+                <span
+                  class="reading-answer"
+                  data-related-question="42"
+                >
+                  <span class="question-marker">Q42</span>
+                  In the forest, they saw a lot of local wildlife.
+                </span>
+
+                Lisa was surprised to see a family of grizzly bears, some gray wolves, and even bald eagles flying overhead.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="38"
+                >
+                  <span class="question-marker">Q38</span>
+                  Outside of the woods, they admired the beauty of some of Yellowstone's natural cascades.
+                </span>
+              </p>
+
+              <p>
+                Since Yellowstone contains many hot springs and the world's largest area of active geysers, Lisa and her friends visited many different geyser sites.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="42"
+                >
+                  <span class="question-marker">Q42</span>
+                  They even spent an afternoon swimming in Yellowstone's Boiling River.
+                </span>
+
+                <span
+                  class="reading-answer"
+                  data-related-question="41"
+                >
+                  <span class="question-marker">Q41</span>
+                  Of all of the sites, Lisa and her friends agreed that Old Faithful was the most impressive.
+                </span>
+
+                <span
+                  class="reading-answer"
+                  data-related-question="42"
+                >
+                  <span class="question-marker">Q42</span>
+                  Lisa and her friends waited patiently for the geyser to erupt.
+                </span>
+
+                <span
+                  class="reading-answer"
+                  data-related-question="37 42"
+                >
+                  <span class="question-marker">Q37</span>
+                  <span class="question-marker">Q42</span>
+                  After about 40 minutes, a stream of boiling water over 100 feet tall sprayed from the ground and up into the air.
+                </span>
+
+                Fortunately, no one got wet!
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 1 TRANSLATION -->
+
+        <div
+          class="tab-panel"
+          id="reading-1-translation"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Толық аударма</h3>
+
+              <p>
+                <strong>Йеллоустоун ұлттық саябағы</strong>
+              </p>
+
+              <p>
+                Айдахо, Монтана және Вайоминг штаттарында орналасқан
+                Йеллоустоун ұлттық саябағы Америка Құрама Штаттарындағы
+                алғашқы ұлттық саябақ ретінде құрылды.
+              </p>
+
+              <p>
+                Саябақ экологиялық туризмді ұнататын келушілер арасында
+                танымал, өйткені мұнда зерттеуге болатын ормандар,
+                таулар және көптеген экожүйелер бар.
+              </p>
+
+              <p>
+                Йеллоустоунның ең танымал көрікті жерлерінің қатарына
+                геотермалды ыстық бұлақтар мен гейзерлер жатады.
+                Олардың ең танымалы Old Faithful деп аталады.
+              </p>
+
+              <p>
+                Өткен күзде Лиза мен оның достары Йеллоустоун ұлттық
+                саябағына шатырмен демалуға баруды шешті.
+              </p>
+
+              <p>
+                Олар саябақтағы көптеген қолайлы лагерь орындарының
+                бірінде тұруға келісті.
+              </p>
+
+              <p>
+                Шатырлы саяхат үшін олар рюкзактарын, ұйықтайтын
+                қаптарын және тамақ пен сусын салынған салқындатқышты
+                алып келді.
+              </p>
+
+              <p>
+                Олар лагерьге келген бойда шатырларын тікті.
+              </p>
+
+              <p>
+                Саяхат кезінде Лиза мен оның достары саябақтың
+                соқпақтарымен жүріп, оның табиғи ортасын зерттеді.
+              </p>
+
+              <p>
+                Орманда олар көптеген жергілікті жабайы жануарларды көрді.
+              </p>
+
+              <p>
+                Лиза гризли аюлар отбасын, бірнеше сұр қасқырды және
+                тіпті төбеде ұшып жүрген ақбас бүркіттерді көргеніне
+                таңғалды.
+              </p>
+
+              <p>
+                Орманнан тыс жерде олар Йеллоустоунның табиғи
+                сарқырамаларының сұлулығына таңданды.
+              </p>
+
+              <p>
+                Йеллоустоунда көптеген ыстық бұлақтар және әлемдегі
+                белсенді гейзерлердің ең үлкен аумағы болғандықтан,
+                Лиза мен оның достары көптеген гейзер орындарына барды.
+              </p>
+
+              <p>
+                Олар тіпті бір түстен кейін Йеллоустоундағы
+                Boiling River өзенінде жүзді.
+              </p>
+
+              <p>
+                Барлық көрікті орындардың ішінде Лиза мен оның достары
+                Old Faithful ең әсерлі болды деген қорытындыға келді.
+              </p>
+
+              <p>
+                Лиза мен оның достары гейзердің атқылауын шыдамдылықпен күтті.
+              </p>
+
+              <p>
+                Шамамен 40 минуттан кейін биіктігі 100 футтан асатын
+                қайнаған су ағыны жерден атқылап, аспанға көтерілді.
+              </p>
+
+              <p>
+                Бақытымызға орай, ешкім су болған жоқ!
+              </p>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Полный перевод</h3>
+
+              <p>
+                <strong>Йеллоустонский национальный парк</strong>
+              </p>
+
+              <p>
+                Йеллоустонский национальный парк, расположенный
+                в штатах Айдахо, Монтана и Вайоминг, был создан
+                как первый национальный парк в Соединённых Штатах.
+              </p>
+
+              <p>
+                Парк является популярным местом среди посетителей,
+                которые любят экологический туризм, поскольку здесь
+                можно исследовать леса, горы и разнообразные экосистемы.
+              </p>
+
+              <p>
+                Среди самых известных достопримечательностей
+                Йеллоустона — геотермальные горячие источники и гейзеры.
+                Самый знаменитый из них называется Old Faithful.
+              </p>
+
+              <p>
+                Прошлой осенью Лиза и её друзья решили отправиться
+                в поход с палатками в Йеллоустонский национальный парк.
+              </p>
+
+              <p>
+                Они договорились остановиться в одном из многочисленных
+                удобных кемпингов парка.
+              </p>
+
+              <p>
+                Для поездки с палатками они взяли рюкзаки, спальные
+                мешки и контейнер с едой и напитками.
+              </p>
+
+              <p>
+                Они установили палатки сразу после прибытия
+                в свой кемпинг.
+              </p>
+
+              <p>
+                Во время поездки Лиза и её друзья ходили по тропам
+                парка, исследуя его природные окрестности.
+              </p>
+
+              <p>
+                В лесу они увидели много местных диких животных.
+              </p>
+
+              <p>
+                Лиза была удивлена, увидев семью медведей гризли,
+                нескольких серых волков и даже белоголовых орланов,
+                летавших над головой.
+              </p>
+
+              <p>
+                За пределами леса они восхищались красотой некоторых
+                природных каскадов Йеллоустона.
+              </p>
+
+              <p>
+                Поскольку в Йеллоустоне находится множество горячих
+                источников и крупнейшая в мире территория активных
+                гейзеров, Лиза и её друзья посетили много разных
+                гейзерных площадок.
+              </p>
+
+              <p>
+                Они даже провели один день, купаясь в реке
+                Boiling River в Йеллоустоне.
+              </p>
+
+              <p>
+                Из всех достопримечательностей Лиза и её друзья
+                решили, что Old Faithful был самым впечатляющим.
+              </p>
+
+              <p>
+                Лиза и её друзья терпеливо ждали извержения гейзера.
+              </p>
+
+              <p>
+                Примерно через 40 минут поток кипящей воды высотой
+                более 100 футов вырвался из земли и поднялся в воздух.
+              </p>
+
+              <p>
+                К счастью, никто не промок!
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 1 VOCABULARY -->
+
+        <div
+          class="tab-panel"
+          id="reading-1-vocabulary"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>national park</strong>
+                  <span>— ұлттық саябақ</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>popular destination</strong>
+                  <span>— танымал бағыт, танымал орын</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ecological tourism</strong>
+                  <span>— экологиялық туризм</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>abundant ecosystems</strong>
+                  <span>— көптеген экожүйелер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>landmark</strong>
+                  <span>— көрікті жер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>hot spring</strong>
+                  <span>— ыстық бұлақ</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>geyser</strong>
+                  <span>— гейзер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>camping trip</strong>
+                  <span>— шатырмен саяхаттау</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>campsite</strong>
+                  <span>— лагерь орны</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>sleeping bag</strong>
+                  <span>— ұйықтайтын қап</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pitch a tent</strong>
+                  <span>— шатыр тігу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>hike the trails</strong>
+                  <span>— соқпақтармен жаяу жүру</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>natural surroundings</strong>
+                  <span>— табиғи орта, айнала</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>local wildlife</strong>
+                  <span>— жергілікті жабайы жануарлар</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>natural cascades</strong>
+                  <span>— табиғи сарқырамалар</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>impressive</strong>
+                  <span>— әсерлі</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wait patiently</strong>
+                  <span>— шыдамдылықпен күту</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>erupt</strong>
+                  <span>— атқылау</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">
+                Paraphrases
+              </h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>
+                    backpacks and sleeping bags
+                  </strong>
+                  <span>
+                    → things needed for a camping trip
+                  </span>
+                  <small>
+                    Рюкзактар мен ұйықтайтын қаптар
+                    → шатырлы саяхатқа қажетті заттар.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    in the United States
+                  </strong>
+                  <span>
+                    → situated in America
+                  </span>
+                  <small>
+                    Америка Құрама Штаттарында
+                    → Америкада орналасқан.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    after about 40 minutes
+                  </strong>
+                  <span>
+                    → nearly an hour
+                  </span>
+                  <small>
+                    Шамамен 40 минуттан кейін
+                    → бір сағатқа жуық уақыт.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    admired the beauty
+                  </strong>
+                  <span>
+                    → found the view amazing
+                  </span>
+                  <small>
+                    Сұлулығына таңданды
+                    → көріністі таңғажайып деп санады.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    exploring its natural surroundings
+                  </strong>
+                  <span>
+                    → hiking in order to see the surroundings
+                  </span>
+                  <small>
+                    Табиғи ортасын зерттеу
+                    → айналаны көру үшін жаяу жүру.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    the most impressive
+                  </strong>
+                  <span>
+                    → mostly overwhelmed by
+                  </span>
+                  <small>
+                    Ең әсерлі
+                    → ең қатты таңғалдырған.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    waited patiently
+                  </strong>
+                  <span>
+                    → did not show impatience
+                  </span>
+                  <small>
+                    Шыдамдылықпен күтті
+                    → шыдамсыздық танытпады.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>national park</strong>
+                  <span>— национальный парк</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>popular destination</strong>
+                  <span>— популярное направление, место</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ecological tourism</strong>
+                  <span>— экологический туризм</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>abundant ecosystems</strong>
+                  <span>— многочисленные экосистемы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>landmark</strong>
+                  <span>— достопримечательность</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>hot spring</strong>
+                  <span>— горячий источник</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>geyser</strong>
+                  <span>— гейзер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>camping trip</strong>
+                  <span>— поездка с палатками</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>campsite</strong>
+                  <span>— место для кемпинга</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>sleeping bag</strong>
+                  <span>— спальный мешок</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pitch a tent</strong>
+                  <span>— установить палатку</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>hike the trails</strong>
+                  <span>— ходить по тропам</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>natural surroundings</strong>
+                  <span>— природные окрестности</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>local wildlife</strong>
+                  <span>— местные дикие животные</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>natural cascades</strong>
+                  <span>— природные каскады, водопады</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>impressive</strong>
+                  <span>— впечатляющий</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wait patiently</strong>
+                  <span>— терпеливо ждать</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>erupt</strong>
+                  <span>— извергаться</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">
+                Paraphrases
+              </h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>
+                    backpacks and sleeping bags
+                  </strong>
+                  <span>
+                    → things needed for a camping trip
+                  </span>
+                  <small>
+                    Рюкзаки и спальные мешки
+                    → вещи для поездки с палатками.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    in the United States
+                  </strong>
+                  <span>
+                    → situated in America
+                  </span>
+                  <small>
+                    В Соединённых Штатах
+                    → расположен в Америке.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    after about 40 minutes
+                  </strong>
+                  <span>
+                    → nearly an hour
+                  </span>
+                  <small>
+                    Примерно через 40 минут
+                    → почти через час.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    admired the beauty
+                  </strong>
+                  <span>
+                    → found the view amazing
+                  </span>
+                  <small>
+                    Восхищались красотой
+                    → считали вид удивительным.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    exploring its natural surroundings
+                  </strong>
+                  <span>
+                    → hiking in order to see the surroundings
+                  </span>
+                  <small>
+                    Исследуя природные окрестности
+                    → ходили, чтобы увидеть окружающую природу.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    the most impressive
+                  </strong>
+                  <span>
+                    → mostly overwhelmed by
+                  </span>
+                  <small>
+                    Самый впечатляющий
+                    → впечатлил больше всего.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    waited patiently
+                  </strong>
+                  <span>
+                    → did not show impatience
+                  </span>
+                  <small>
+                    Ждали терпеливо
+                    → не проявляли нетерпения.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 1 STRATEGY -->
+
+        <div
+          class="tab-panel"
+          id="reading-1-strategy"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>
+                Бұл Reading тапсырмасын қалай орындау керек?
+              </h3>
+
+              <div class="strategy-step">
+                <strong>
+                  1. Сұрақтағы негізгі сөздерді белгілеу
+                </strong>
+
+                <p>
+                  Backpacks, America, eruption, cascades, surroundings,
+                  impressive және except сөздеріне назар аудару керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  2. Мәтіндегі дәл сол сөзді ғана іздемеу
+                </strong>
+
+                <p>
+                  Сұрақтарда перефразалар бар. Мысалы,
+                  nearly an hour мәтіндегі about 40 minutes тіркесіне,
+                  amazing сөзі admired the beauty тіркесіне сәйкес келеді.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  3. Except сөзін жіберіп алмау
+                </strong>
+
+                <p>
+                  Question 42-де мәтінге сәйкес келмейтін жауапты табу керек.
+                  Олар patiently күтті, сондықтан impatience дұрыс емес.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  4. Негізгі идеяны бүкіл мәтіннен анықтау
+                </strong>
+
+                <p>
+                  Question 40 бір ғана сөйлемге емес, бүкіл мәтінге
+                  негізделеді. Мәтінде саябақ табиғаты және туристердің
+                  әсері бірге сипатталған.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Сұрақтар бойынша шешу жолы
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 35</strong>
+                  <p>
+                    Backpacks және sleeping bags сөздері camping trip
+                    сөйлемінде бірге берілген.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 36</strong>
+                  <p>
+                    United States сөзін America нұсқасымен сәйкестендіру керек.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 37</strong>
+                  <p>
+                    About 40 minutes — жарты сағаттан көп және
+                    бір сағатқа жақын, сондықтан nearly an hour.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 38</strong>
+                  <p>
+                    Admired the beauty тіркесі жағымды әсерді білдіреді.
+                    Сондықтан amazing дұрыс.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 39</strong>
+                  <p>
+                    Hiked the trails тіркесінен кейін exploring its
+                    natural surroundings деп нақты жазылған.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 40</strong>
+                  <p>
+                    Мәтін саябақтың бай табиғатын және туристердің
+                    алған әсерін сипаттайды.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 41</strong>
+                  <p>
+                    The most impressive тіркесі Old Faithful гейзеріне қатысты.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 42</strong>
+                  <p>
+                    Except арқылы жалған ақпаратты табамыз.
+                    Waited patiently — they showed impatience нұсқасына қарама-қарсы.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>
+                Как нужно было решать этот Reading?
+              </h3>
+
+              <div class="strategy-step">
+                <strong>
+                  1. Выделить ключевые слова
+                </strong>
+
+                <p>
+                  Нужно отметить backpacks, America, eruption,
+                  cascades, surroundings, impressive и except.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  2. Искать не только точное совпадение
+                </strong>
+
+                <p>
+                  В вопросах используются перефразы. Например,
+                  nearly an hour соответствует about 40 minutes,
+                  а amazing связано с admired the beauty.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  3. Не пропустить слово except
+                </strong>
+
+                <p>
+                  В Question 42 нужно найти вариант, который не соответствует
+                  тексту. Они ждали patiently, значит impatience неверно.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  4. Определить общую тему всего текста
+                </strong>
+
+                <p>
+                  Question 40 основан не на одном предложении,
+                  а на всём тексте. В нём описываются природа парка
+                  и впечатления туристов.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Как решать каждый вопрос
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 35</strong>
+                  <p>
+                    Backpacks и sleeping bags находятся в предложении
+                    о camping trip.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 36</strong>
+                  <p>
+                    United States нужно соотнести с вариантом America.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 37</strong>
+                  <p>
+                    About 40 minutes — это больше половины часа
+                    и ближе всего к nearly an hour.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 38</strong>
+                  <p>
+                    Admired the beauty выражает положительное впечатление,
+                    поэтому подходит amazing.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 39</strong>
+                  <p>
+                    После hiked the trails прямо сказано
+                    exploring its natural surroundings.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 40</strong>
+                  <p>
+                    Весь текст описывает богатство природы парка
+                    и впечатления Лизы и её друзей.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 41</strong>
+                  <p>
+                    The most impressive относится к Old Faithful.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 42</strong>
+                  <p>
+                    Слово except требует найти неверное утверждение.
+                    Waited patiently противоположно showed impatience.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
+            <!-- READING 2 -->
+
+      <article
+        class="listening-card reading-card"
+        id="reading-2"
+        data-reading-id="2"
+      >
+
+        <div class="listening-number">
+          Reading 2 · Questions 43–50
+        </div>
+
+        <h2 class="listening-title">
+          WONDERS OF EGYPT
+        </h2>
+
+        <div class="tab-buttons">
+
+          <button
+            type="button"
+            class="tab-button active"
+            data-tab-target="reading-2-test"
+          >
+            Test
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-2-text"
+          >
+            Text
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-2-translation"
+          >
+            <span class="language-content lang-kk">
+              Аударма
+            </span>
+
+            <span class="language-content lang-ru">
+              Перевод
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-2-vocabulary"
+          >
+            Vocabulary
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="reading-2-strategy"
+          >
+            <span class="language-content lang-kk">
+              Қалай орындау керек
+            </span>
+
+            <span class="language-content lang-ru">
+              Как решить
+            </span>
+          </button>
+
+        </div>
+
+        <!-- READING 2 TEST -->
+
+        <div
+          class="tab-panel active"
+          id="reading-2-test"
+        >
+
+          <p class="test-instruction">
+            <span class="language-content lang-kk">
+              Әр сұрақ бойынша бір дұрыс жауапты таңдаңыз.
+              Нәтижені көрсеткеннен кейін дұрыс жауап жасыл,
+              ал таңдалған қате жауап қызыл түспен белгіленеді.
+            </span>
+
+            <span class="language-content lang-ru">
+              Выберите один правильный ответ в каждом вопросе.
+              После показа результата правильный ответ будет выделен
+              зелёным, а выбранный неправильный — красным.
+            </span>
+          </p>
+
+          <form
+            class="reading-test-form"
+            id="reading-2-test-form"
+          >
+
+            <!-- QUESTION 43 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="43"
+              data-correct="D"
+            >
+
+              <span class="question-number">
+                Question 43
+              </span>
+
+              <p class="question-text">
+                Azza Mohamed Sarry El-Din is
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question43"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>an archeologist</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question43"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>a builder</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question43"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>a worker</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question43"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>a scientist</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: D) a scientist
+                  </h4>
+
+                  <p>
+                    Мәтінде Azza Mohamed Sarry El-Din зираттан табылған
+                    денелерді зерттейтін ғалым ретінде көрсетілген.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...says Azza Mohamed Sarry BI-Din, a scientist
+                    studying bodies found in the cemetery.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: D) a scientist
+                  </h4>
+
+                  <p>
+                    В тексте Azza Mohamed Sarry El-Din названа учёным,
+                    изучающим тела, найденные на кладбище.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...says Azza Mohamed Sarry BI-Din, a scientist
+                    studying bodies found in the cemetery.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 44 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="44"
+              data-correct="C"
+            >
+
+              <span class="question-number">
+                Question 44
+              </span>
+
+              <p class="question-text">
+                The synonym of workers
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question44"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>archeologists</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question44"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>aliens</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question44"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>laborers</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question44"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>foreigners</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) laborers
+                  </h4>
+
+                  <p>
+                    <strong>Workers</strong> және
+                    <strong>laborers</strong> сөздері жұмысшылар
+                    деген бірдей мағына береді.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The work was challenging, but laborers were
+                    proud of their work.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) laborers
+                  </h4>
+
+                  <p>
+                    Слова <strong>workers</strong> и
+                    <strong>laborers</strong> являются близкими
+                    синонимами и означают «рабочие».
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The work was challenging, but laborers were
+                    proud of their work.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 45 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="45"
+              data-correct="D"
+            >
+
+              <span class="question-number">
+                Question 45
+              </span>
+
+              <p class="question-text">
+                Life span of male laborers
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question45"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>30-35 years</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question45"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>35-55 years</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question45"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>50-56 years</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question45"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>40-45 years</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: D) 40-45 years
+                  </h4>
+
+                  <p>
+                    Мәтінде ер жұмысшылардың 40–45 жасқа дейін
+                    өмір сүргені тікелей жазылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Male workers lived to age 40-45, but women
+                    to only 30-35.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: D) 40-45 years
+                  </h4>
+
+                  <p>
+                    В тексте прямо указано, что мужчины-рабочие
+                    жили до 40–45 лет.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Male workers lived to age 40-45, but women
+                    to only 30-35.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 46 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="46"
+              data-correct="A"
+            >
+
+              <span class="question-number">
+                Question 46
+              </span>
+
+              <p class="question-text">
+                The synonym of dug up is
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question46"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>took out of the ground</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question46"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>placed on the top</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question46"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>broke into small pieces</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question46"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>joined together</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: A) took out of the ground
+                  </h4>
+
+                  <p>
+                    <strong>Dug up</strong> бір затты жерден қазып
+                    шығару деген мағына береді.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Some dug up the rock, some moved it, and some
+                    shaped it into blocks.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: A) took out of the ground
+                  </h4>
+
+                  <p>
+                    Выражение <strong>dug up</strong> означает
+                    «выкопали» или «достали из земли».
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Some dug up the rock, some moved it, and some
+                    shaped it into blocks.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 47 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="47"
+              data-correct="A"
+            >
+
+              <span class="question-number">
+                Question 47
+              </span>
+
+              <p class="question-text">
+                Find the false sentence
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question47"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>laborers didn't have food</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question47"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>workers had enough food</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question47"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>builders had medical care</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question47"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>workers had meal to eat</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: A) laborers didn't have food
+                  </h4>
+
+                  <p>
+                    Сұрақта false sentence табу керек. Мәтінде
+                    жұмысшылардың тамағы жеткілікті болғаны айтылған.
+                    Сондықтан олардың тамағы болмады деген нұсқа жалған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “However, workers usually had enough food,
+                    and they also had medical care if they got sick
+                    or hurt.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: A) laborers didn't have food
+                  </h4>
+
+                  <p>
+                    Нужно найти ложное утверждение. В тексте сказано,
+                    что у рабочих обычно было достаточно еды.
+                    Поэтому утверждение об отсутствии еды неверно.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “However, workers usually had enough food,
+                    and they also had medical care if they got sick
+                    or hurt.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 48 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="48"
+              data-correct="C"
+            >
+
+              <span class="question-number">
+                Question 48
+              </span>
+
+              <p class="question-text">
+                Archeologists found an ancient village
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question48"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>on the rocks</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question48"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>under the blocks</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question48"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>close to the pyramids</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question48"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>far from the cemetery</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) close to the pyramids
+                  </h4>
+
+                  <p>
+                    Мәтінде археологтардың пирамидалардың жанынан
+                    ежелгі ауыл тапқаны айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “But archeologists recently discovered an ancient
+                    village near the pyramids.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) close to the pyramids
+                  </h4>
+
+                  <p>
+                    Археологи обнаружили древнюю деревню рядом
+                    с пирамидами.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “But archeologists recently discovered an ancient
+                    village near the pyramids.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 49 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="49"
+              data-correct="B"
+            >
+
+              <span class="question-number">
+                Question 49
+              </span>
+
+              <p class="question-text">
+                Find the true sentence
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question49"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>100 years needed to finish the building of pyramids</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question49"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>nearly 80 years needed to construct pyramids</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question49"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>35 years needed to complete the building of pyramids</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question49"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>150 years needed to build pyramids</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: B) nearly 80 years needed to construct pyramids
+                  </h4>
+
+                  <p>
+                    Мәтінде пирамидаларды салуға шамамен сексен жыл
+                    кеткені нақты жазылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “It took about eighty years to build the pyramids”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: B) nearly 80 years needed to construct pyramids
+                  </h4>
+
+                  <p>
+                    В тексте прямо сказано, что строительство пирамид
+                    заняло около восьмидесяти лет.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “It took about eighty years to build the pyramids”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 50 -->
+
+            <div
+              class="question-card reading-question"
+              data-question="50"
+              data-correct="C"
+            >
+
+              <span class="question-number">
+                Question 50
+              </span>
+
+              <p class="question-text">
+                According to Azza Mohamed Sarry El-Din
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="reading2-question50"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>builders were sick</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="reading2-question50"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>bones doesn't show signs of arthritis</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="reading2-question50"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>builders' skeletons show that their life was hard</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="reading2-question50"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>female skeletons were damaged</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) builders' skeletons show that their life was hard
+                  </h4>
+
+                  <p>
+                    Azza Mohamed Sarry El-Din жұмысшылар өмірінің
+                    ауыр болғанын олардың қаңқаларынан көруге
+                    болатынын айтады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Life for these workers was hard. ‘We can see
+                    that in their skeletons,’ says Azza Mohamed
+                    Sarry BI-Din...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) builders' skeletons show that their life was hard
+                  </h4>
+
+                  <p>
+                    По словам Azza Mohamed Sarry El-Din, тяжёлую жизнь
+                    строителей можно увидеть по состоянию их скелетов.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Life for these workers was hard. ‘We can see
+                    that in their skeletons,’ says Azza Mohamed
+                    Sarry BI-Din...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- READING 2 RESULT BUTTONS -->
+
+            <div class="result-actions">
+
+              <button
+                type="button"
+                class="primary-button show-reading-result"
+                data-reading="2"
+              >
+                <span class="language-content lang-kk">
+                  Нәтижені көрсету
+                </span>
+
+                <span class="language-content lang-ru">
+                  Показать результат
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="secondary-button reset-reading-test"
+                data-reading="2"
+              >
+                <span class="language-content lang-kk">
+                  Жауаптарды тазарту
+                </span>
+
+                <span class="language-content lang-ru">
+                  Очистить ответы
+                </span>
+              </button>
+
+            </div>
+
+            <div
+              class="block-result"
+              id="reading-2-result"
+            >
+              <strong>
+                <span class="language-content lang-kk">
+                  Reading 2 нәтижесі:
+                </span>
+
+                <span class="language-content lang-ru">
+                  Результат Reading 2:
+                </span>
+
+                <span id="reading-2-score">
+                  0/8
+                </span>
+              </strong>
+
+              <p id="reading-2-result-message"></p>
+            </div>
+
+          </form>
+
+        </div>
+                <!-- READING 2 TEXT -->
+
+        <div
+          class="tab-panel"
+          id="reading-2-text"
+        >
+
+          <div class="content-block">
+
+            <h3>WONDERS OF EGYPT</h3>
+
+            <div
+              class="locked-message reading-locked-message"
+              data-reading="2"
+            >
+              <span class="language-content lang-kk">
+                Нәтижені көрсеткеннен кейін мәтіндегі жауап орналасқан
+                сөйлемдер Q43–Q50 белгілерімен ерекшеленеді.
+              </span>
+
+              <span class="language-content lang-ru">
+                После показа результата предложения с ответами
+                будут выделены метками Q43–Q50.
+              </span>
+            </div>
+
+            <div
+              class="reading-text"
+              id="reading-2-text-content"
+            >
+
+              <p>
+                For centuries, the pyramids of Giza have been timeless symbols of Egyptian culture. But who actually built them? For years, we did not know for sure.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="48"
+                >
+                  <span class="question-marker">Q48</span>
+                  But archeologists recently discovered an ancient village near the pyramids.
+                </span>
+
+                Close by, there was a cemetery where pyramid builders were buried. From studying these places, archeologists can now confirm that the pyramids were not built by slaves or foreigners (or space aliens!).
+              </p>
+
+              <p>
+                Ordinary Egyptians built them.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="49"
+                >
+                  <span class="question-marker">Q49</span>
+                  It took about eighty years to build the pyramids
+                </span>
+
+                According to archeologists, about 20,000-30,000 people were involved in completing the task. The workers had different roles.
+
+                <span
+                  class="reading-answer"
+                  data-related-question="46"
+                >
+                  <span class="question-marker">Q46</span>
+                  Some dug up the rock, some moved it, and some shaped it into blocks.
+                </span>
+
+                People also worked in different teams, each with its own name.
+              </p>
+
+              <p>
+                These teams often competed to do a job faster.
+              </p>
+
+              <h4>A Pyramid Builder's Life</h4>
+
+              <p>
+                <span
+                  class="reading-answer"
+                  data-related-question="43 50"
+                >
+                  <span class="question-marker">Q43</span>
+                  <span class="question-marker">Q50</span>
+                  Life for these workers was hard. "We can see that in their skeletons," says Azza Mohamed Sarry BI-Din, a scientist studying bodies found in the cemetery.
+                </span>
+
+                The bones show signs of arthritis, which developed from carrying heavy things for a long time.
+              </p>
+
+              <p>
+                Archeologists have also found many female skeletons in the village and cemetery. The damage to their bones is similar to that of the men. Their lives may have been even tougher:
+
+                <span
+                  class="reading-answer"
+                  data-related-question="45"
+                >
+                  <span class="question-marker">Q45</span>
+                  Male workers lived to age 40-45, but women to only 30-35.
+                </span>
+
+                <span
+                  class="reading-answer"
+                  data-related-question="47"
+                >
+                  <span class="question-marker">Q47</span>
+                  However, workers usually had enough food, and they also had medical care if they got sick or hurt.
+                </span>
+
+                The work was challenging, but
+
+                <span
+                  class="reading-answer"
+                  data-related-question="44"
+                >
+                  <span class="question-marker">Q44</span>
+                  laborers were proud of their work.
+                </span>
+
+                On a wall in Khufu's Great Pyramid, for example, a group of workers wrote Friends of Khufu. "It's because they were not just building the tomb of their king," says Egyptian archeologist Zahi Hawass.
+              </p>
+
+              <p>
+                "They were building Egypt. It was a national project, and everyone was a participant."
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 2 TRANSLATION -->
+
+        <div
+          class="tab-panel"
+          id="reading-2-translation"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Толық аударма</h3>
+
+              <p>
+                <strong>Мысыр ғажайыптары</strong>
+              </p>
+
+              <p>
+                Ғасырлар бойы Гиза пирамидалары Мысыр мәдениетінің
+                мәңгілік символдары болып келді. Бірақ оларды шын
+                мәнінде кім салды? Көп жылдар бойы біз мұны нақты білмедік.
+              </p>
+
+              <p>
+                Алайда археологтар жақында пирамидалардың жанынан
+                ежелгі ауылды тапты. Оның маңында пирамида
+                құрылысшылары жерленген зират болған.
+              </p>
+
+              <p>
+                Осы орындарды зерттеу арқылы археологтар енді
+                пирамидаларды құлдар немесе шетелдіктер
+                салмағанын растай алады.
+              </p>
+
+              <p>
+                Оларды қарапайым мысырлықтар салған.
+                Пирамидаларды салуға шамамен сексен жыл кеткен.
+                Археологтардың айтуынша, бұл жұмысты аяқтауға
+                шамамен 20 000–30 000 адам қатысқан.
+              </p>
+
+              <p>
+                Жұмысшылардың міндеттері әртүрлі болған.
+                Кейбіреулері тасты жерден қазып шығарған,
+                кейбіреулері оны тасымалдаған, ал басқалары
+                оны блоктар түрінде өңдеген.
+              </p>
+
+              <p>
+                Адамдар әртүрлі топтарда жұмыс істеген және әр топтың
+                өз атауы болған. Бұл топтар жұмысты тезірек орындау
+                үшін жиі жарысқан.
+              </p>
+
+              <p>
+                <strong>Пирамида құрылысшысының өмірі</strong>
+              </p>
+
+              <p>
+                Бұл жұмысшылардың өмірі ауыр болған.
+                Зираттан табылған денелерді зерттеп жүрген ғалым
+                Azza Mohamed Sarry BI-Din:
+                «Біз мұны олардың қаңқаларынан көре аламыз», — дейді.
+              </p>
+
+              <p>
+                Сүйектерден ұзақ уақыт бойы ауыр заттарды көтеруден
+                пайда болған артрит белгілері көрінеді.
+              </p>
+
+              <p>
+                Археологтар ауыл мен зираттан көптеген әйелдердің
+                қаңқаларын да тапқан. Олардың сүйектеріндегі зақым
+                ер адамдардікіне ұқсас.
+              </p>
+
+              <p>
+                Олардың өмірі одан да ауыр болуы мүмкін:
+                ер жұмысшылар 40–45 жасқа дейін, ал әйелдер
+                тек 30–35 жасқа дейін өмір сүрген.
+              </p>
+
+              <p>
+                Дегенмен жұмысшыларда әдетте жеткілікті тамақ болған,
+                сондай-ақ олар ауырып немесе жарақат алған жағдайда
+                медициналық көмек алған.
+              </p>
+
+              <p>
+                Жұмыс қиын болғанымен, жұмысшылар өз еңбектерін
+                мақтан тұтқан.
+              </p>
+
+              <p>
+                Мысалы, Хуфудың Ұлы пирамидасының қабырғасына бір топ
+                жұмысшы Friends of Khufu деп жазған.
+              </p>
+
+              <p>
+                Мысырлық археолог Zahi Hawass:
+                «Олар тек патшаларының қабірін салып жатқан жоқ еді.
+                Олар Мысырды салып жатты. Бұл ұлттық жоба болды
+                және барлығы оған қатысты», — дейді.
+              </p>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Полный перевод</h3>
+
+              <p>
+                <strong>Чудеса Египта</strong>
+              </p>
+
+              <p>
+                На протяжении веков пирамиды Гизы были вечными
+                символами египетской культуры. Но кто на самом деле
+                их построил? Долгие годы мы не знали этого наверняка.
+              </p>
+
+              <p>
+                Однако недавно археологи обнаружили древнюю деревню
+                рядом с пирамидами. Неподалёку находилось кладбище,
+                где были похоронены строители пирамид.
+              </p>
+
+              <p>
+                Изучив эти места, археологи теперь могут подтвердить,
+                что пирамиды были построены не рабами и не иностранцами.
+              </p>
+
+              <p>
+                Их построили обычные египтяне.
+                Строительство пирамид заняло около восьмидесяти лет.
+                По словам археологов, в выполнении этой задачи
+                участвовало около 20 000–30 000 человек.
+              </p>
+
+              <p>
+                Рабочие выполняли разные обязанности.
+                Одни выкапывали камень из земли, другие перемещали его,
+                а третьи придавали ему форму блоков.
+              </p>
+
+              <p>
+                Люди также работали в разных командах,
+                у каждой из которых было своё название.
+                Эти команды часто соревновались, чтобы выполнить
+                работу быстрее.
+              </p>
+
+              <p>
+                <strong>Жизнь строителя пирамид</strong>
+              </p>
+
+              <p>
+                Жизнь этих рабочих была тяжёлой.
+                «Мы можем увидеть это по их скелетам», —
+                говорит Azza Mohamed Sarry BI-Din, учёный,
+                изучающий тела, найденные на кладбище.
+              </p>
+
+              <p>
+                На костях видны признаки артрита, который развился
+                из-за длительного ношения тяжестей.
+              </p>
+
+              <p>
+                Археологи также нашли множество женских скелетов
+                в деревне и на кладбище. Повреждения их костей
+                похожи на повреждения костей мужчин.
+              </p>
+
+              <p>
+                Их жизнь, возможно, была ещё тяжелее:
+                мужчины-рабочие доживали до 40–45 лет,
+                а женщины — только до 30–35.
+              </p>
+
+              <p>
+                Однако у рабочих обычно было достаточно еды,
+                а также медицинская помощь, если они заболевали
+                или получали травмы.
+              </p>
+
+              <p>
+                Работа была тяжёлой, но рабочие гордились своим трудом.
+              </p>
+
+              <p>
+                Например, на стене Великой пирамиды Хуфу группа
+                рабочих написала Friends of Khufu.
+              </p>
+
+              <p>
+                Египетский археолог Zahi Hawass говорит:
+                «Они строили не просто гробницу своего царя.
+                Они строили Египет. Это был национальный проект,
+                и каждый был его участником».
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 2 VOCABULARY -->
+
+        <div
+          class="tab-panel"
+          id="reading-2-vocabulary"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>timeless symbol</strong>
+                  <span>— мәңгілік символ</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>archeologist</strong>
+                  <span>— археолог</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ancient village</strong>
+                  <span>— ежелгі ауыл</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>cemetery</strong>
+                  <span>— зират</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pyramid builder</strong>
+                  <span>— пирамида құрылысшысы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ordinary Egyptians</strong>
+                  <span>— қарапайым мысырлықтар</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>complete the task</strong>
+                  <span>— тапсырманы аяқтау</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>dig up</strong>
+                  <span>— жерден қазып шығару</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>shape into blocks</strong>
+                  <span>— блок түріне келтіру</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>compete</strong>
+                  <span>— жарысу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>skeleton</strong>
+                  <span>— қаңқа</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>arthritis</strong>
+                  <span>— артрит</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>carry heavy things</strong>
+                  <span>— ауыр заттарды көтеру</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>life span</strong>
+                  <span>— өмір сүру ұзақтығы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>medical care</strong>
+                  <span>— медициналық көмек</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>laborer</strong>
+                  <span>— жұмысшы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>challenging</strong>
+                  <span>— қиын</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>participant</strong>
+                  <span>— қатысушы</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">
+                Paraphrases
+              </h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>
+                    a scientist studying bodies
+                  </strong>
+                  <span>
+                    → Azza Mohamed Sarry El-Din is a scientist
+                  </span>
+                  <small>
+                    Денелерді зерттейтін ғалым
+                    → Azza Mohamed Sarry El-Din — ғалым.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>workers</strong>
+                  <span>→ laborers</span>
+                  <small>
+                    Workers және laborers — жұмысшылар деген
+                    мағынадағы синонимдер.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    lived to age 40-45
+                  </strong>
+                  <span>
+                    → life span was 40-45 years
+                  </span>
+                  <small>
+                    40–45 жасқа дейін өмір сүрді
+                    → өмір сүру ұзақтығы 40–45 жыл.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>dug up</strong>
+                  <span>→ took out of the ground</span>
+                  <small>
+                    Жерден қазып шығарды
+                    → жердің ішінен алды.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    workers usually had enough food
+                  </strong>
+                  <span>
+                    → laborers did have food
+                  </span>
+                  <small>
+                    Жұмысшыларда жеткілікті тамақ болды
+                    → жұмысшылар тамақсыз болған жоқ.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>near the pyramids</strong>
+                  <span>→ close to the pyramids</span>
+                  <small>
+                    Пирамидалардың жанында
+                    → пирамидаларға жақын.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    about eighty years
+                  </strong>
+                  <span>
+                    → nearly 80 years
+                  </span>
+                  <small>
+                    Шамамен сексен жыл
+                    → сексен жылға жуық.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    life was hard, seen in their skeletons
+                  </strong>
+                  <span>
+                    → skeletons show that their life was hard
+                  </span>
+                  <small>
+                    Өмірінің ауыр болғаны қаңқаларынан көрінеді
+                    → қаңқалар ауыр өмірді көрсетеді.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>timeless symbol</strong>
+                  <span>— вечный символ</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>archeologist</strong>
+                  <span>— археолог</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ancient village</strong>
+                  <span>— древняя деревня</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>cemetery</strong>
+                  <span>— кладбище</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pyramid builder</strong>
+                  <span>— строитель пирамиды</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>ordinary Egyptians</strong>
+                  <span>— обычные египтяне</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>complete the task</strong>
+                  <span>— завершить задачу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>dig up</strong>
+                  <span>— выкопать из земли</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>shape into blocks</strong>
+                  <span>— придать форму блоков</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>compete</strong>
+                  <span>— соревноваться</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>skeleton</strong>
+                  <span>— скелет</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>arthritis</strong>
+                  <span>— артрит</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>carry heavy things</strong>
+                  <span>— носить тяжёлые вещи</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>life span</strong>
+                  <span>— продолжительность жизни</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>medical care</strong>
+                  <span>— медицинская помощь</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>laborer</strong>
+                  <span>— рабочий</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>challenging</strong>
+                  <span>— трудный</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>participant</strong>
+                  <span>— участник</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">
+                Paraphrases
+              </h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>
+                    a scientist studying bodies
+                  </strong>
+                  <span>
+                    → Azza Mohamed Sarry El-Din is a scientist
+                  </span>
+                  <small>
+                    Учёный, изучающий тела
+                    → Azza Mohamed Sarry El-Din является учёным.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>workers</strong>
+                  <span>→ laborers</span>
+                  <small>
+                    Workers и laborers — синонимы со значением
+                    «рабочие».
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    lived to age 40-45
+                  </strong>
+                  <span>
+                    → life span was 40-45 years
+                  </span>
+                  <small>
+                    Жили до 40–45 лет
+                    → продолжительность жизни составляла 40–45 лет.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>dug up</strong>
+                  <span>→ took out of the ground</span>
+                  <small>
+                    Выкопали
+                    → достали из земли.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    workers usually had enough food
+                  </strong>
+                  <span>
+                    → laborers did have food
+                  </span>
+                  <small>
+                    У рабочих было достаточно еды
+                    → рабочие не оставались без еды.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>near the pyramids</strong>
+                  <span>→ close to the pyramids</span>
+                  <small>
+                    Рядом с пирамидами
+                    → близко к пирамидам.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    about eighty years
+                  </strong>
+                  <span>
+                    → nearly 80 years
+                  </span>
+                  <small>
+                    Около восьмидесяти лет
+                    → почти восемьдесят лет.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>
+                    life was hard, seen in their skeletons
+                  </strong>
+                  <span>
+                    → skeletons show that their life was hard
+                  </span>
+                  <small>
+                    Тяжёлая жизнь видна по скелетам
+                    → скелеты показывают, что жизнь была тяжёлой.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- READING 2 STRATEGY -->
+
+        <div
+          class="tab-panel"
+          id="reading-2-strategy"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>
+                Бұл Reading тапсырмасын қалай орындау керек?
+              </h3>
+
+              <div class="strategy-step">
+                <strong>
+                  1. Адамның мамандығын атының жанынан іздеу
+                </strong>
+
+                <p>
+                  Question 43-де Azza Mohamed Sarry El-Din атының
+                  жанында a scientist деп жазылған.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  2. Синоним сұрақтарында мағынаны салыстыру
+                </strong>
+
+                <p>
+                  Workers сөзі laborers сөзімен, ал dug up тіркесі
+                  took out of the ground тіркесімен сәйкес келеді.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  3. False және true сөздеріне назар аудару
+                </strong>
+
+                <p>
+                  Question 47-де жалған сөйлемді, Question 49-да
+                  дұрыс сөйлемді таңдау керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  4. Сандарды дәл салыстыру
+                </strong>
+
+                <p>
+                  40–45 years — ер жұмысшылардың өмір сүру ұзақтығы,
+                  ал about eighty years — пирамидаларды салуға кеткен уақыт.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Сұрақтар бойынша шешу жолы
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 43</strong>
+                  <p>
+                    Адамның аты аталған сөйлемнен кейін бірден
+                    a scientist деген анықтама берілген.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 44</strong>
+                  <p>
+                    Laborers сөзі workers сөзінің мәтіндегі синонимі.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 45</strong>
+                  <p>
+                    Male workers тіркесінен кейін 40-45 саны берілген.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 46</strong>
+                  <p>
+                    Dug up — тасты жерден қазып шығару,
+                    яғни took out of the ground.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 47</strong>
+                  <p>
+                    False sentence табу керек. Мәтінде enough food
+                    болғаны айтылған, сондықтан didn't have food жалған.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 48</strong>
+                  <p>
+                    Near the pyramids тіркесі close to the pyramids
+                    нұсқасымен сәйкес келеді.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 49</strong>
+                  <p>
+                    About eighty years тіркесі nearly 80 years
+                    нұсқасына сәйкес келеді.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 50</strong>
+                  <p>
+                    Azza олардың өмірінің ауыр болғанын
+                    қаңқаларынан көруге болатынын айтады.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>
+                Как нужно было решать этот Reading?
+              </h3>
+
+              <div class="strategy-step">
+                <strong>
+                  1. Искать профессию рядом с именем
+                </strong>
+
+                <p>
+                  В Question 43 сразу после имени Azza Mohamed
+                  Sarry El-Din указано a scientist.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  2. Сравнивать значения в вопросах на синонимы
+                </strong>
+
+                <p>
+                  Workers соответствует laborers,
+                  а dug up — took out of the ground.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  3. Следить за словами false и true
+                </strong>
+
+                <p>
+                  В Question 47 требуется ложное утверждение,
+                  а в Question 49 — верное.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  4. Точно сравнивать числа
+                </strong>
+
+                <p>
+                  40–45 years — продолжительность жизни мужчин,
+                  а about eighty years — срок строительства пирамид.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Как решать каждый вопрос
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 43</strong>
+                  <p>
+                    Сразу после имени человека дана характеристика
+                    a scientist.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 44</strong>
+                  <p>
+                    Laborers является синонимом слова workers.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 45</strong>
+                  <p>
+                    После слов Male workers указано 40-45.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 46</strong>
+                  <p>
+                    Dug up означает достать или выкопать из земли.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 47</strong>
+                  <p>
+                    Нужно найти ложное утверждение. В тексте сказано,
+                    что еды было достаточно, поэтому didn't have food неверно.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 48</strong>
+                  <p>
+                    Near the pyramids соответствует варианту
+                    close to the pyramids.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 49</strong>
+                  <p>
+                    About eighty years соответствует nearly 80 years.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 50</strong>
+                  <p>
+                    Azza говорит, что тяжёлая жизнь строителей
+                    видна по их скелетам.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </article>
+            <!-- READING TOTAL RESULT -->
+
+      <section
+        class="listening-total-result"
+        id="reading-total-result"
+      >
+
+        <h2>
+          <span class="language-content lang-kk">
+            Reading бойынша жалпы нәтиже
+          </span>
+
+          <span class="language-content lang-ru">
+            Общий результат по Reading
+          </span>
+        </h2>
+
+        <div class="total-result-grid">
+
+          <div class="total-result-item">
+            <span>Reading 1</span>
+            <strong id="reading-total-score-1">
+              0/8
+            </strong>
+          </div>
+
+          <div class="total-result-item">
+            <span>Reading 2</span>
+            <strong id="reading-total-score-2">
+              0/8
+            </strong>
+          </div>
+
+          <div class="total-result-item total-result-main">
+            <span>
+              <span class="language-content lang-kk">
+                Жалпы нәтиже
+              </span>
+
+              <span class="language-content lang-ru">
+                Общий результат
+              </span>
+            </span>
+
+            <strong id="reading-total-score">
+              0/16
+            </strong>
+          </div>
+
+        </div>
+
+        <p id="reading-total-message">
+          <span class="language-content lang-kk">
+            Жалпы нәтижені көру үшін екі Reading тапсырмасын да тексеріңіз.
+          </span>
+
+          <span class="language-content lang-ru">
+            Чтобы увидеть общий результат, проверьте оба задания Reading.
+          </span>
+        </p>
+
+      </section>
+
+    </section>
+
+    <!-- ENGLISH TOTAL RESULT -->
+
+    <section
+      class="english-final-section"
+      id="english-final-section"
+    >
+
+      <div class="english-final-header">
+
+        <span class="final-result-label">
+          English · 50 Questions
+        </span>
+
+        <h2>
+          <span class="language-content lang-kk">
+            Ағылшын тілі бойынша жалпы нәтиже
+          </span>
+
+          <span class="language-content lang-ru">
+            Общий результат по английскому языку
+          </span>
+        </h2>
+
+        <p>
+          <span class="language-content lang-kk">
+            Төмендегі батырманы басқанда барлық 50 сұрақ тексеріледі.
+            Дұрыс жауаптар жасыл түспен белгіленіп, әр сұрақтың
+            түсіндірмесі көрсетіледі.
+          </span>
+
+          <span class="language-content lang-ru">
+            После нажатия кнопки будут проверены все 50 вопросов.
+            Правильные ответы выделятся зелёным цветом, и под каждым
+            вопросом появится объяснение.
+          </span>
+        </p>
+
+      </div>
+
+      <div class="final-action-buttons">
+
+        <button
+          type="button"
+          class="final-show-button"
+          id="show-all-results"
+        >
+          <span class="language-content lang-kk">
+            Барлық нәтижені көрсету
+          </span>
+
+          <span class="language-content lang-ru">
+            Показать результат всего теста
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="final-reset-button"
+          id="reset-all-results"
+        >
+          <span class="language-content lang-kk">
+            Барлық жауапты тазарту
+          </span>
+
+          <span class="language-content lang-ru">
+            Очистить все ответы
+          </span>
+        </button>
+
+      </div>
+
+      <div class="english-score-grid">
+
+        <div class="english-score-card">
+
+          <span class="english-score-name">
+            Listening
+          </span>
+
+          <strong id="english-listening-score">
+            0/16
+          </strong>
+
+          <small>
+            Questions 1–16
+          </small>
+
+        </div>
+
+        <div class="english-score-card">
+
+          <span class="english-score-name">
+            Grammar
+          </span>
+
+          <strong id="english-grammar-score">
+            0/18
+          </strong>
+
+          <small>
+            Questions 17–34
+          </small>
+
+        </div>
+
+        <div class="english-score-card">
+
+          <span class="english-score-name">
+            Reading
+          </span>
+
+          <strong id="english-reading-score">
+            0/16
+          </strong>
+
+          <small>
+            Questions 35–50
+          </small>
+
+        </div>
+
+      </div>
+
+      <div
+        class="english-main-result"
+        id="english-main-result"
+      >
+
+        <span>
+          <span class="language-content lang-kk">
+            Жалпы балл
+          </span>
+
+          <span class="language-content lang-ru">
+            Общий балл
+          </span>
+        </span>
+
+        <strong id="english-total-score">
+          0/50
+        </strong>
+
+        <div
+          class="english-percentage"
+          id="english-total-percentage"
+        >
+          0%
+        </div>
+
+        <p id="english-total-message">
+          <span class="language-content lang-kk">
+            Барлық сұрақтарға жауап беріп, нәтижені көрсетіңіз.
+          </span>
+
+          <span class="language-content lang-ru">
+            Ответьте на вопросы и покажите результат.
+          </span>
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <style>
+    .reading-text {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 13px;
+      background: #f8fafc;
+      line-height: 1.9;
+    }
+
+    .reading-text p {
+      margin: 0 0 18px;
+    }
+
+    .reading-text h4 {
+      margin: 24px 0 12px;
+      font-size: 20px;
+    }
+
+    .reading-answer {
+      transition: 0.25s ease;
+    }
+
+    .reading-answer .question-marker {
+      display: none;
+    }
+
+    .reading-answer.revealed {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--highlight);
+      box-shadow: inset 0 -2px 0 var(--highlight-border);
+    }
+
+    .reading-answer.revealed .question-marker {
+      display: inline-block;
+    }
+
+    .grammar-formula {
+      padding: 11px 13px;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, monospace;
+    }
+
+    .english-final-section {
+      margin-top: 38px;
+      padding: clamp(20px, 5vw, 38px);
+      border: 1px solid #bfdbfe;
+      border-radius: 24px;
+      background:
+        linear-gradient(
+          145deg,
+          #ffffff 0%,
+          #eff6ff 55%,
+          #eef2ff 100%
+        );
+      box-shadow: var(--shadow);
+    }
+
+    .english-final-header {
+      max-width: 760px;
+      margin: 0 auto 25px;
+      text-align: center;
+    }
+
+    .final-result-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .english-final-header h2 {
+      margin: 0;
+      font-size: clamp(26px, 6vw, 40px);
+      line-height: 1.2;
+    }
+
+    .english-final-header p {
+      margin: 13px 0 0;
+      color: var(--muted);
+    }
+
+    .final-action-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .final-show-button,
+    .final-reset-button {
+      min-height: 52px;
+      padding: 13px 22px;
+      border-radius: 13px;
+      font-weight: 850;
+    }
+
+    .final-show-button {
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    .final-show-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .final-reset-button {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .english-score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .english-score-card {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.88);
+      text-align: center;
+    }
+
+    .english-score-name {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .english-score-card strong {
+      color: var(--primary-dark);
+      font-size: 28px;
+    }
+
+    .english-score-card small {
+      color: var(--muted);
+    }
+
+    .english-main-result {
+      padding: 25px;
+      border: 2px solid #60a5fa;
+      border-radius: 19px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .english-main-result > span {
+      display: block;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .english-main-result > strong {
+      display: block;
+      margin-top: 3px;
+      color: #1d4ed8;
+      font-size: clamp(42px, 10vw, 68px);
+      line-height: 1.1;
+    }
+
+    .english-percentage {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 7px 15px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    #english-total-message {
+      margin: 14px 0 0;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .english-score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .final-action-buttons {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .final-show-button,
+      .final-reset-button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    (() => {
+      const readingScores = {
+        1: null,
+        2: null
+      };
+
+      window.readingScores = readingScores;
+      window.readingScore = null;
+
+      const readingQuestionTotals = {
+        1: 8,
+        2: 8
+      };
+
+      function currentLanguage() {
+        return document.documentElement.lang === "ru"
+          ? "ru"
+          : "kk";
+      }
+
+      function initializeReadingTabs() {
+        document
+          .querySelectorAll(".reading-card")
+          .forEach((card) => {
+            const buttons =
+              card.querySelectorAll(".tab-button");
+
+            const panels =
+              card.querySelectorAll(".tab-panel");
+
+            buttons.forEach((button) => {
+              button.addEventListener("click", () => {
+                const targetId =
+                  button.dataset.tabTarget;
+
+                const targetPanel =
+                  document.getElementById(targetId);
+
+                buttons.forEach((item) => {
+                  item.classList.remove("active");
+                });
+
+                panels.forEach((panel) => {
+                  panel.classList.remove("active");
+                });
+
+                button.classList.add("active");
+
+                if (targetPanel) {
+                  targetPanel.classList.add("active");
+                }
+              });
+            });
+          });
+      }
+
+      function getReadingMessage(score, total) {
+        const percentage =
+          Math.round((score / total) * 100);
+
+        const language =
+          currentLanguage();
+
+        if (language === "kk") {
+          if (percentage === 100) {
+            return "Өте жақсы! Барлық жауап дұрыс.";
+          }
+
+          if (percentage >= 75) {
+            return "Жақсы нәтиже! Қате жауаптардың түсіндірмесін қайталаңыз.";
+          }
+
+          if (percentage >= 50) {
+            return "Орташа нәтиже. Мәтіндегі белгіленген сөйлемдерді мұқият қараңыз.";
+          }
+
+          return "Мәтінді қайта оқып, Vocabulary және Paraphrases бөлімдерін қайталаңыз.";
+        }
+
+        if (percentage === 100) {
+          return "Отлично! Все ответы правильные.";
+        }
+
+        if (percentage >= 75) {
+          return "Хороший результат! Повторите объяснения к ошибочным ответам.";
+        }
+
+        if (percentage >= 50) {
+          return "Средний результат. Внимательно изучите выделенные места в тексте.";
+        }
+
+        return "Прочитайте текст ещё раз и повторите Vocabulary и Paraphrases.";
+      }
+
+      function revealReadingAnswers(readingId) {
+        const card =
+          document.querySelector(
+            `[data-reading-id="${readingId}"]`
+          );
+
+        if (!card) {
+          return;
+        }
+
+        card
+          .querySelectorAll(".reading-answer")
+          .forEach((answer) => {
+            answer.classList.add("revealed");
+          });
+
+        card
+          .querySelectorAll(".reading-locked-message")
+          .forEach((message) => {
+            message.style.display = "none";
+          });
+      }
+
+      function showReadingResult(readingId, scrollToResult = true) {
+        const card =
+          document.querySelector(
+            `[data-reading-id="${readingId}"]`
+          );
+
+        if (!card) {
+          return;
+        }
+
+        const questions =
+          card.querySelectorAll(".reading-question");
+
+        let score = 0;
+
+        questions.forEach((question) => {
+          const correctAnswer =
+            question.dataset.correct;
+
+          const selectedInput =
+            question.querySelector(
+              'input[type="radio"]:checked'
+            );
+
+          question
+            .querySelectorAll(".answer-option")
+            .forEach((option) => {
+              option.classList.remove(
+                "correct-answer",
+                "wrong-answer"
+              );
+
+              const optionValue =
+                option.dataset.option;
+
+              if (optionValue === correctAnswer) {
+                option.classList.add(
+                  "correct-answer"
+                );
+              }
+
+              if (
+                selectedInput &&
+                selectedInput.value === optionValue &&
+                selectedInput.value !== correctAnswer
+              ) {
+                option.classList.add(
+                  "wrong-answer"
+                );
+              }
+            });
+
+          if (
+            selectedInput &&
+            selectedInput.value === correctAnswer
+          ) {
+            score++;
+          }
+
+          const explanation =
+            question.querySelector(
+              ".question-explanation"
+            );
+
+          if (explanation) {
+            explanation.classList.add("visible");
+          }
+
+          question
+            .querySelectorAll(
+              'input[type="radio"]'
+            )
+            .forEach((input) => {
+              input.disabled = true;
+            });
+        });
+
+        readingScores[readingId] = score;
+
+        window.readingScore =
+          (readingScores[1] ?? 0) +
+          (readingScores[2] ?? 0);
+
+        const scoreElement =
+          document.getElementById(
+            `reading-${readingId}-score`
+          );
+
+        const messageElement =
+          document.getElementById(
+            `reading-${readingId}-result-message`
+          );
+
+        const resultBox =
+          document.getElementById(
+            `reading-${readingId}-result`
+          );
+
+        if (scoreElement) {
+          scoreElement.textContent =
+            `${score}/${questions.length}`;
+        }
+
+        if (messageElement) {
+          messageElement.textContent =
+            getReadingMessage(
+              score,
+              questions.length
+            );
+        }
+
+        if (resultBox) {
+          resultBox.classList.add("visible");
+        }
+
+        revealReadingAnswers(readingId);
+        updateReadingTotal();
+        updateCompleteEnglishResult();
+
+        if (
+          scrollToResult &&
+          resultBox
+        ) {
+          resultBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+      }
+
+      function resetReadingTest(readingId) {
+        const card =
+          document.querySelector(
+            `[data-reading-id="${readingId}"]`
+          );
+
+        if (!card) {
+          return;
+        }
+
+        card
+          .querySelectorAll(".reading-question")
+          .forEach((question) => {
+            question
+              .querySelectorAll(".answer-option")
+              .forEach((option) => {
+                option.classList.remove(
+                  "correct-answer",
+                  "wrong-answer"
+                );
+              });
+
+            question
+              .querySelectorAll(
+                'input[type="radio"]'
+              )
+              .forEach((input) => {
+                input.checked = false;
+                input.disabled = false;
+              });
+
+            const explanation =
+              question.querySelector(
+                ".question-explanation"
+              );
+
+            if (explanation) {
+              explanation.classList.remove(
+                "visible"
+              );
+            }
+          });
+
+        card
+          .querySelectorAll(".reading-answer")
+          .forEach((answer) => {
+            answer.classList.remove("revealed");
+          });
+
+        card
+          .querySelectorAll(".reading-locked-message")
+          .forEach((message) => {
+            message.style.display = "";
+          });
+
+        const resultBox =
+          document.getElementById(
+            `reading-${readingId}-result`
+          );
+
+        const scoreElement =
+          document.getElementById(
+            `reading-${readingId}-score`
+          );
+
+        const messageElement =
+          document.getElementById(
+            `reading-${readingId}-result-message`
+          );
+
+        if (resultBox) {
+          resultBox.classList.remove("visible");
+        }
+
+        if (scoreElement) {
+          scoreElement.textContent =
+            `0/${readingQuestionTotals[readingId]}`;
+        }
+
+        if (messageElement) {
+          messageElement.textContent = "";
+        }
+
+        readingScores[readingId] = null;
+
+        window.readingScore =
+          (readingScores[1] ?? 0) +
+          (readingScores[2] ?? 0);
+
+        updateReadingTotal();
+        updateCompleteEnglishResult();
+
+        const testButton =
+          card.querySelector(
+            `[data-tab-target="reading-${readingId}-test"]`
+          );
+
+        if (testButton) {
+          testButton.click();
+        }
+      }
+
+      function updateReadingTotal() {
+        const firstScore =
+          readingScores[1];
+
+        const secondScore =
+          readingScores[2];
+
+        const total =
+          (firstScore ?? 0) +
+          (secondScore ?? 0);
+
+        const firstElement =
+          document.getElementById(
+            "reading-total-score-1"
+          );
+
+        const secondElement =
+          document.getElementById(
+            "reading-total-score-2"
+          );
+
+        const totalElement =
+          document.getElementById(
+            "reading-total-score"
+          );
+
+        const messageElement =
+          document.getElementById(
+            "reading-total-message"
+          );
+
+        if (firstElement) {
+          firstElement.textContent =
+            `${firstScore ?? 0}/8`;
+        }
+
+        if (secondElement) {
+          secondElement.textContent =
+            `${secondScore ?? 0}/8`;
+        }
+
+        if (totalElement) {
+          totalElement.textContent =
+            `${total}/16`;
+        }
+
+        if (!messageElement) {
+          return;
+        }
+
+        if (
+          firstScore === null ||
+          secondScore === null
+        ) {
+          messageElement.textContent =
+            currentLanguage() === "kk"
+              ? "Жалпы нәтижені көру үшін екі Reading тапсырмасын да тексеріңіз."
+              : "Чтобы увидеть общий результат, проверьте оба задания Reading.";
+
+          return;
+        }
+
+        const percentage =
+          Math.round((total / 16) * 100);
+
+        messageElement.textContent =
+          currentLanguage() === "kk"
+            ? `Сіздің Reading бойынша нәтижеңіз: ${total}/16 (${percentage}%).`
+            : `Ваш результат по Reading: ${total}/16 (${percentage}%).`;
+      }
+
+      function getEnglishTotalMessage(score) {
+        const percentage =
+          Math.round((score / 50) * 100);
+
+        const language =
+          currentLanguage();
+
+        if (language === "kk") {
+          if (percentage === 100) {
+            return "Керемет нәтиже! Барлық 50 сұраққа дұрыс жауап бердіңіз.";
+          }
+
+          if (percentage >= 80) {
+            return "Өте жақсы нәтиже! Қате жауаптардың түсіндірмесін қайталаңыз.";
+          }
+
+          if (percentage >= 60) {
+            return "Жақсы нәтиже. Әлсіз бөлімдерді қайта қарап шығыңыз.";
+          }
+
+          if (percentage >= 40) {
+            return "Орташа нәтиже. Transcript, мәтіндер және грамматикалық түсіндірмелерді қайталаңыз.";
+          }
+
+          return "Listening, Grammar және Reading бөлімдерін қайта қарау қажет.";
+        }
+
+        if (percentage === 100) {
+          return "Отличный результат! Все 50 вопросов выполнены правильно.";
+        }
+
+        if (percentage >= 80) {
+          return "Очень хороший результат! Повторите объяснения к ошибочным ответам.";
+        }
+
+        if (percentage >= 60) {
+          return "Хороший результат. Повторите разделы, в которых были ошибки.";
+        }
+
+        if (percentage >= 40) {
+          return "Средний результат. Повторите Transcript, тексты и грамматические объяснения.";
+        }
+
+        return "Необходимо повторить разделы Listening, Grammar и Reading.";
+      }
+
+      function updateCompleteEnglishResult() {
+        const listeningTotal =
+          typeof listeningScores !== "undefined"
+            ? (listeningScores[1] ?? 0) +
+              (listeningScores[2] ?? 0)
+            : 0;
+
+        const grammarTotal =
+          typeof grammarScore !== "undefined" &&
+          grammarScore !== null
+            ? grammarScore
+            : 0;
+
+        const readingTotal =
+          (readingScores[1] ?? 0) +
+          (readingScores[2] ?? 0);
+
+        const total =
+          listeningTotal +
+          grammarTotal +
+          readingTotal;
+
+        const percentage =
+          Math.round((total / 50) * 100);
+
+        const listeningElement =
+          document.getElementById(
+            "english-listening-score"
+          );
+
+        const grammarElement =
+          document.getElementById(
+            "english-grammar-score"
+          );
+
+        const readingElement =
+          document.getElementById(
+            "english-reading-score"
+          );
+
+        const totalElement =
+          document.getElementById(
+            "english-total-score"
+          );
+
+        const percentageElement =
+          document.getElementById(
+            "english-total-percentage"
+          );
+
+        const messageElement =
+          document.getElementById(
+            "english-total-message"
+          );
+
+        if (listeningElement) {
+          listeningElement.textContent =
+            `${listeningTotal}/16`;
+        }
+
+        if (grammarElement) {
+          grammarElement.textContent =
+            `${grammarTotal}/18`;
+        }
+
+        if (readingElement) {
+          readingElement.textContent =
+            `${readingTotal}/16`;
+        }
+
+        if (totalElement) {
+          totalElement.textContent =
+            `${total}/50`;
+        }
+
+        if (percentageElement) {
+          percentageElement.textContent =
+            `${percentage}%`;
+        }
+
+        if (messageElement) {
+          messageElement.textContent =
+            getEnglishTotalMessage(total);
+        }
+      }
+
+      window.updateEnglishTotalResult =
+        updateCompleteEnglishResult;
+
+      function showAllResults() {
+        if (
+          typeof showListeningResult === "function"
+        ) {
+          showListeningResult("1");
+          showListeningResult("2");
+        }
+
+        if (
+          typeof showGrammarResult === "function"
+        ) {
+          showGrammarResult();
+        }
+
+        showReadingResult("1", false);
+        showReadingResult("2", false);
+
+        updateReadingTotal();
+        updateCompleteEnglishResult();
+
+        const finalSection =
+          document.getElementById(
+            "english-final-section"
+          );
+
+        if (finalSection) {
+          setTimeout(() => {
+            finalSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start"
+            });
+          }, 200);
+        }
+      }
+
+      function resetAllResults() {
+        if (
+          typeof resetListeningTest === "function"
+        ) {
+          resetListeningTest("1");
+          resetListeningTest("2");
+        }
+
+        if (
+          typeof resetGrammarTest === "function"
+        ) {
+          resetGrammarTest();
+        }
+
+        resetReadingTest("1");
+        resetReadingTest("2");
+
+        updateReadingTotal();
+        updateCompleteEnglishResult();
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+
+      document
+        .querySelectorAll(".show-reading-result")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            showReadingResult(
+              button.dataset.reading
+            );
+          });
+        });
+
+      document
+        .querySelectorAll(".reset-reading-test")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            resetReadingTest(
+              button.dataset.reading
+            );
+          });
+        });
+
+      const showAllButton =
+        document.getElementById(
+          "show-all-results"
+        );
+
+      const resetAllButton =
+        document.getElementById(
+          "reset-all-results"
+        );
+
+      if (showAllButton) {
+        showAllButton.addEventListener(
+          "click",
+          showAllResults
+        );
+      }
+
+      if (resetAllButton) {
+        resetAllButton.addEventListener(
+          "click",
+          resetAllResults
+        );
+      }
+
+      initializeReadingTabs();
+
+      const previousLanguageUpdater =
+        typeof updateAllResultMessages === "function"
+          ? updateAllResultMessages
+          : null;
+
+      window.updateAllResultMessages =
+        function () {
+          if (previousLanguageUpdater) {
+            previousLanguageUpdater();
+          }
+
+          Object
+            .keys(readingScores)
+            .forEach((readingId) => {
+              const score =
+                readingScores[readingId];
+
+              if (score === null) {
+                return;
+              }
+
+              const messageElement =
+                document.getElementById(
+                  `reading-${readingId}-result-message`
+                );
+
+              if (messageElement) {
+                messageElement.textContent =
+                  getReadingMessage(
+                    score,
+                    readingQuestionTotals[readingId]
+                  );
+              }
+            });
+
+          updateReadingTotal();
+          updateCompleteEnglishResult();
+        };
+
+      updateReadingTotal();
+      updateCompleteEnglishResult();
+    })();
+  </script>
+
+</body>
+</html>
+
+    
+            
