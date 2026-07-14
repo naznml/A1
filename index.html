@@ -1,1 +1,4807 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Пробный тест — English</title>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --background: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #dbe3ef;
+      --correct: #15803d;
+      --correct-bg: #dcfce7;
+      --wrong: #b91c1c;
+      --wrong-bg: #fee2e2;
+      --highlight: #fef3c7;
+      --highlight-border: #f59e0b;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner {
+      width: min(1100px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .site-title {
+      margin: 0;
+      font-size: clamp(20px, 5vw, 30px);
+      line-height: 1.2;
+    }
+
+    .site-subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .language-switch {
+      display: flex;
+      padding: 4px;
+      background: #eaf0f9;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .language-button {
+      min-width: 82px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .language-button.active {
+      background: var(--card);
+      color: var(--primary);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.1);
+    }
+
+    .page-container {
+      width: min(1100px, calc(100% - 28px));
+      margin: 28px auto 70px;
+    }
+
+    .main-section {
+      margin-bottom: 34px;
+    }
+
+    .section-heading {
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(25px, 6vw, 38px);
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+    }
+
+    .listening-card {
+      margin-bottom: 32px;
+      padding: clamp(18px, 4vw, 30px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .listening-number {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .listening-title {
+      margin: 0 0 5px;
+      font-size: clamp(23px, 5vw, 32px);
+    }
+
+    .audio-file-name {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .audio-box {
+      margin-bottom: 22px;
+      padding: 16px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 16px;
+    }
+
+    .audio-box audio {
+      display: block;
+      width: 100%;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 5px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .tab-button {
+      flex: 0 0 auto;
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .tab-button.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .test-instruction {
+      margin: 0 0 18px;
+      padding: 13px 15px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      color: #334155;
+    }
+
+    .question-card {
+      margin-bottom: 18px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #ffffff;
+      transition: 0.2s ease;
+    }
+
+    .question-card:hover {
+      border-color: #b9c7d9;
+    }
+
+    .question-number {
+      display: inline-block;
+      margin-bottom: 7px;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .question-text {
+      margin: 0 0 14px;
+      font-size: 17px;
+      font-weight: 750;
+      line-height: 1.5;
+    }
+
+    .answer-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer-option {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 13px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #ffffff;
+      transition: 0.18s ease;
+    }
+
+    .answer-option:hover {
+      border-color: #93b4e8;
+      background: #f8fbff;
+    }
+
+    .answer-option input {
+      width: 18px;
+      height: 18px;
+      margin: 3px 0 0;
+      flex-shrink: 0;
+      accent-color: var(--primary);
+    }
+
+    .answer-letter {
+      min-width: 24px;
+      font-weight: 850;
+    }
+
+    .answer-option.correct-answer {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #14532d;
+    }
+
+    .answer-option.wrong-answer {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: #7f1d1d;
+    }
+
+    .answer-option.correct-answer::after {
+      content: "✓";
+      margin-left: auto;
+      color: var(--correct);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .answer-option.wrong-answer::after {
+      content: "✕";
+      margin-left: auto;
+      color: var(--wrong);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .question-explanation {
+      display: none;
+      margin-top: 16px;
+      padding: 15px;
+      border: 1px solid #bbf7d0;
+      border-radius: 13px;
+      background: #f0fdf4;
+    }
+
+    .question-explanation.visible {
+      display: block;
+    }
+
+    .question-explanation h4 {
+      margin: 0 0 8px;
+      color: #166534;
+      font-size: 16px;
+    }
+
+    .question-explanation p {
+      margin: 7px 0;
+    }
+
+    .evidence-quote {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--highlight-border);
+      border-radius: 8px;
+      background: var(--highlight);
+      color: #713f12;
+    }
+
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .primary-button,
+    .secondary-button {
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 850;
+    }
+
+    .primary-button {
+      border: 1px solid var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .primary-button:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary-button {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .block-result {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 15px;
+      background: #eff6ff;
+      border: 1px solid #93c5fd;
+    }
+
+    .block-result.visible {
+      display: block;
+    }
+
+    .block-result strong {
+      color: #1d4ed8;
+      font-size: 19px;
+    }
+
+    .content-block {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #ffffff;
+    }
+
+    .content-block h3 {
+      margin-top: 0;
+    }
+
+    .locked-message {
+      margin: 0;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .transcript-text {
+      white-space: pre-line;
+    }
+
+    .answer-highlight {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--highlight);
+      box-shadow: inset 0 -2px 0 var(--highlight-border);
+    }
+
+    .question-marker {
+      display: inline-block;
+      margin-right: 4px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+
+    .language-content {
+      display: none;
+    }
+
+    html[lang="kk"] .language-content.lang-kk {
+      display: block;
+    }
+
+    html[lang="ru"] .language-content.lang-ru {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      .site-subtitle {
+        display: none;
+      }
+
+      .language-button {
+        min-width: 67px;
+        padding: 8px 9px;
+      }
+
+      .listening-card {
+        padding: 16px;
+        border-radius: 17px;
+      }
+
+      .question-card {
+        padding: 15px;
+      }
+
+      .question-text {
+        font-size: 16px;
+      }
+
+      .answer-option {
+        padding: 11px;
+      }
+
+      .result-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .primary-button,
+      .secondary-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+
+      <div>
+        <h1 class="site-title">
+          <span class="language-content lang-kk">Пробный тест</span>
+          <span class="language-content lang-ru">Пробный тест</span>
+        </h1>
+
+        <p class="site-subtitle">
+          <span class="language-content lang-kk">
+            Ағылшын тілі бойынша дайындық
+          </span>
+
+          <span class="language-content lang-ru">
+            Подготовка по английскому языку
+          </span>
+        </p>
+      </div>
+
+      <div class="language-switch">
+        <button
+          type="button"
+          class="language-button active"
+          data-language="kk"
+        >
+          Қазақша
+        </button>
+
+        <button
+          type="button"
+          class="language-button"
+          data-language="ru"
+        >
+          Русский
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="page-container">
+
+    <section class="main-section" id="listening-section">
+
+      <div class="section-heading">
+        <h2>Listening</h2>
+
+        <p>
+          <span class="language-content lang-kk">
+            Аудионы тыңдап, дұрыс жауапты таңдаңыз.
+          </span>
+
+          <span class="language-content lang-ru">
+            Прослушайте аудио и выберите правильный ответ.
+          </span>
+        </p>
+      </div>
+
+      <!-- LISTENING 1 -->
+
+      <article
+        class="listening-card"
+        id="listening-1"
+        data-listening-id="1"
+      >
+
+        <div class="listening-number">
+          Listening 1 · Questions 1–8
+        </div>
+
+        <h2 class="listening-title">Marine Research</h2>
+
+        <p class="audio-file-name">
+          Новая запись 36.m4a
+        </p>
+
+        <div class="audio-box">
+          <audio controls preload="metadata">
+            <source
+              src="Новая запись 36.m4a"
+              type="audio/mp4"
+            >
+
+            <span class="language-content lang-kk">
+              Браузеріңіз аудио файлды қолдамайды.
+            </span>
+
+            <span class="language-content lang-ru">
+              Ваш браузер не поддерживает аудиофайл.
+            </span>
+          </audio>
+        </div>
+
+        <div class="tab-buttons">
+
+          <button
+            type="button"
+            class="tab-button active"
+            data-tab-target="listening-1-test"
+          >
+            Test
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-1-transcript"
+          >
+            Transcript
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-1-translation"
+          >
+            <span class="language-content lang-kk">Аударма</span>
+            <span class="language-content lang-ru">Перевод</span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-1-vocabulary"
+          >
+            Vocabulary
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-1-strategy"
+          >
+            <span class="language-content lang-kk">
+              Қалай орындау керек
+            </span>
+
+            <span class="language-content lang-ru">
+              Как решить
+            </span>
+          </button>
+
+        </div>
+
+        <!-- TEST PANEL -->
+
+        <div
+          class="tab-panel active"
+          id="listening-1-test"
+        >
+
+          <p class="test-instruction">
+
+            <span class="language-content lang-kk">
+              Әр сұрақ бойынша бір дұрыс жауапты таңдаңыз.
+              Нәтиже көрсетілгеннен кейін дұрыс жауап жасыл түспен
+              белгіленеді және түсіндірме шығады.
+            </span>
+
+            <span class="language-content lang-ru">
+              Выберите один правильный ответ в каждом вопросе.
+              После показа результата правильный вариант будет
+              выделен зелёным цветом и появится объяснение.
+            </span>
+
+          </p>
+
+          <form class="listening-test-form">
+
+            <!-- QUESTION 1 -->
+
+            <div
+              class="question-card"
+              data-question="1"
+              data-correct="A"
+            >
+
+              <span class="question-number">Question 1</span>
+
+              <p class="question-text">
+                What organization set the following goals ‘educational lectures and publications, expedition assistance, travel programmes’?
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question1"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>The Explorers Club</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question1"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>Expeditions working in extreme environments</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question1"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>the international organisation 'Reef Check'</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question1"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>professional society</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: A) The Explorers Club</h4>
+
+                  <p>
+                    Мәтінде The Explorers Club өз мақсаттарын жүзеге
+                    асыру үшін зерттеу гранттарын, білім беру дәрістерін,
+                    жарияланымдарды, экспедицияны жоспарлауға көмекті
+                    және саяхат бағдарламаларын ұсынатыны айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “We foster these goals by providing research grants,
+                    educational lectures and publications, expedition
+                    planning assistance, exciting adventure travel
+                    programmes...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: A) The Explorers Club</h4>
+
+                  <p>
+                    В тексте говорится, что именно The Explorers Club
+                    поддерживает свои цели с помощью исследовательских
+                    грантов, образовательных лекций, публикаций, помощи
+                    в планировании экспедиций и туристических программ.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “We foster these goals by providing research grants,
+                    educational lectures and publications, expedition
+                    planning assistance, exciting adventure travel
+                    programmes...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 2 -->
+
+            <div
+              class="question-card"
+              data-question="2"
+              data-correct="D"
+            >
+
+              <span class="question-number">Question 2</span>
+
+              <p class="question-text">
+                In Kosa Marine resources its island support staff works together with
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question2"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>unifying force</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question2"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>The Explorers Club</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question2"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>the international organisation 'Reef Check'.</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question2"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>volunteer divers</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: D) volunteer divers</h4>
+
+                  <p>
+                    Kosa Reef Protection Project жобасын Kosa Marine
+                    resources, халықаралық ерікті сүңгуірлер тобы және
+                    аралдағы қолдау қызметкерлері бірлесіп жүзеге асырады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The project is a joint effort by Kosa Marine
+                    resources, an international group of volunteer
+                    divers, and island support staff.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: D) volunteer divers</h4>
+
+                  <p>
+                    Проект Kosa Reef Protection Project является
+                    совместной работой Kosa Marine resources,
+                    международной группы дайверов-добровольцев и
+                    сотрудников поддержки на острове.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The project is a joint effort by Kosa Marine
+                    resources, an international group of volunteer
+                    divers, and island support staff.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 3 -->
+
+            <div
+              class="question-card"
+              data-question="3"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 3</span>
+
+              <p class="question-text">
+                Participants in the Project Marina club are
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question3"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>taking action to prevent damage</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question3"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>trying to increase marine resources</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question3"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>observing the condition of the reef</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question3"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>intending task for international aid</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) observing the condition of the reef
+                  </h4>
+
+                  <p>
+                    Қатысушылар балықтардың тізімін жасайды, фото және
+                    бейне жазбалар дайындайды, ғылыми өлшемдер жүргізеді.
+                    Осы әрекеттердің барлығы рифтің жағдайын бақылауға
+                    арналған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Divers prepare fish inventories, photo and video
+                    records, and take scientific measurements
+                    documenting reef status.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) observing the condition of the reef
+                  </h4>
+
+                  <p>
+                    Участники составляют списки рыб, делают фото- и
+                    видеозаписи и проводят научные измерения. Все эти
+                    действия нужны для наблюдения за состоянием рифа.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “Divers prepare fish inventories, photo and video
+                    records, and take scientific measurements
+                    documenting reef status.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 4 -->
+
+            <div
+              class="question-card"
+              data-question="4"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 4</span>
+
+              <p class="question-text">
+                Expeditions working in extreme environments are likely to get it
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question4"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>photo and video records of international trips</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question4"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>expedition planning assistance</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question4"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>modest expedition grants</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question4"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>exciting adventure travel programs</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: C) modest expedition grants
+                  </h4>
+
+                  <p>
+                    Мәтіннің соңында экстремалды ортада жұмыс істейтін
+                    экспедициялар The Explorers Club ұсынатын шағын
+                    экспедициялық гранттарға өтініш бере алатыны
+                    көрсетілген.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The Explorers Club also offers modest expedition
+                    grants for expeditions that forge links between
+                    space and earth exploration.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: C) modest expedition grants
+                  </h4>
+
+                  <p>
+                    В конце текста сказано, что The Explorers Club
+                    предлагает небольшие экспедиционные гранты
+                    экспедициям, связанным с исследованием космоса
+                    и Земли.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The Explorers Club also offers modest expedition
+                    grants for expeditions that forge links between
+                    space and earth exploration.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 5 -->
+
+            <div
+              class="question-card"
+              data-question="5"
+              data-correct="B"
+            >
+
+              <span class="question-number">Question 5</span>
+
+              <p class="question-text">
+                Where researches can meet and exchange ideas?
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question5"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>in expeditions</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question5"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>at forums</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question5"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>in unifying force</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question5"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>in an international group</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: B) at forums</h4>
+
+                  <p>
+                    Мәтінде ғылым мен зерттеудің әртүрлі салаларындағы
+                    мамандар идея алмасу үшін форумда кездесетіні
+                    айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...a forum where experts in all the diverse fields
+                    of science and exploration can meet to exchange
+                    ideas.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: B) at forums</h4>
+
+                  <p>
+                    В тексте сказано, что специалисты из разных областей
+                    науки и исследований могут встречаться на форуме
+                    и обмениваться идеями.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...a forum where experts in all the diverse fields
+                    of science and exploration can meet to exchange
+                    ideas.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 6 -->
+
+            <div
+              class="question-card"
+              data-question="6"
+              data-correct="B"
+            >
+
+              <span class="question-number">Question 6</span>
+
+              <p class="question-text">
+                How to contact with The Explorers Club if you deal with space and earth exploration?
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question6"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>at a meeting point</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question6"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>via email</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question6"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>attending educational lectures</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question6"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>joining their expeditions</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: B) via email</h4>
+
+                  <p>
+                    Мәтінде ғарыш пен Жерді зерттеуге байланысты
+                    экспедициялар көрсетілген электрондық пошта
+                    мекенжайы арқылы байланысуы керек екені айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...should contact us at the following address
+                    Marinalife@gmail.com”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: B) via email</h4>
+
+                  <p>
+                    В тексте указан электронный адрес, по которому
+                    должны связаться экспедиции, занимающиеся
+                    исследованием космоса и Земли.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...should contact us at the following address
+                    Marinalife@gmail.com”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 7 -->
+
+            <div
+              class="question-card"
+              data-question="7"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 7</span>
+
+              <p class="question-text">
+                The birthday month of the Kosa Reef Protection Project
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question7"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>'Reef Check'</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question7"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>1904</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question7"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>March</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question7"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>marinalife@gmail.com</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: C) March</h4>
+
+                  <p>
+                    Мәтінде наурыз айында Kosa Reef Protection Project
+                    жобасының жұмыс істеп келе жатқанына бес жыл
+                    толатыны тікелей айтылған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “March will mark the fifth year of the running of
+                    the Kosa Reef Protection Project.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: C) March</h4>
+
+                  <p>
+                    В тексте прямо сказано, что в марте исполнится
+                    пять лет с начала работы проекта Kosa Reef
+                    Protection Project.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “March will mark the fifth year of the running of
+                    the Kosa Reef Protection Project.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 8 -->
+
+            <div
+              class="question-card"
+              data-question="8"
+              data-correct="D"
+            >
+
+              <span class="question-number">Question 8</span>
+
+              <p class="question-text">
+                According to the text, the type of ‘advancement’ which is supported
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening1-question8"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>the international organisation 'Reef Check'.</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening1-question8"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>expedition planning</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening1-question8"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>of creating a meeting point</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening1-question8"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>of field research</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: D) of field research</h4>
+
+                  <p>
+                    Мәтінде The Explorers Club далалық зерттеулердің
+                    дамуына арналғаны тікелей көрсетілген.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The Explorers Club is dedicated to the advancement
+                    of field research, scientific exploration...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: D) of field research</h4>
+
+                  <p>
+                    В тексте прямо сказано, что The Explorers Club
+                    поддерживает развитие полевых исследований.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The Explorers Club is dedicated to the advancement
+                    of field research, scientific exploration...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="result-actions">
+
+              <button
+                type="button"
+                class="primary-button show-listening-result"
+                data-listening="1"
+              >
+                <span class="language-content lang-kk">
+                  Нәтижені көрсету
+                </span>
+
+                <span class="language-content lang-ru">
+                  Показать результат
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="secondary-button reset-listening-test"
+                data-listening="1"
+              >
+                <span class="language-content lang-kk">
+                  Жауаптарды тазарту
+                </span>
+
+                <span class="language-content lang-ru">
+                  Очистить ответы
+                </span>
+              </button>
+
+            </div>
+
+            <div
+              class="block-result"
+              id="listening-1-result"
+            >
+              <strong>
+                <span class="language-content lang-kk">
+                  Listening 1 нәтижесі:
+                </span>
+
+                <span class="language-content lang-ru">
+                  Результат Listening 1:
+                </span>
+
+                <span id="listening-1-score">0/8</span>
+              </strong>
+
+              <p id="listening-1-result-message"></p>
+            </div>
+
+          </form>
+        </div>
+                <!-- TRANSCRIPT PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-1-transcript"
+        >
+
+          <div class="content-block">
+
+            <h3>Transcript</h3>
+
+            <div
+              class="locked-message transcript-locked-message"
+              data-listening="1"
+            >
+              <span class="language-content lang-kk">
+                Transcript нәтижені көрсеткеннен кейін жауаптар орналасқан
+                жерлермен бірге белгіленеді.
+              </span>
+
+              <span class="language-content lang-ru">
+                После показа результата в Transcript будут выделены места,
+                в которых находятся ответы.
+              </span>
+            </div>
+
+            <div
+              class="transcript-text"
+              id="listening-1-transcript-text"
+            >
+              <strong>Marine Research</strong>
+
+The World Centre for Exploration has been running since
+1904. Our international, professional society has been a meeting point and unifying force for explorers and scientists worldwide.
+
+<span
+  class="transcript-answer"
+  data-related-question="8"
+><span class="question-marker">Q8</span>The Explorers Club is dedicated to the advancement of field research, scientific exploration, and the ideal that it is vital to preserve the instinct to explore.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="1"
+><span class="question-marker">Q1</span>We foster these goals by providing research grants, educational lectures and publications, expedition planning assistance,
+exciting
+adventure
+travel
+programmes, and a forum where experts in all the diverse fields of science and exploration can meet to exchange ideas.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="5"
+><span class="question-marker">Q5</span>We foster these goals by providing research grants, educational lectures and publications, expedition planning assistance,
+exciting
+adventure
+travel
+programmes, and a forum where experts in all the diverse fields of science and exploration can meet to exchange ideas.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="7"
+><span class="question-marker">Q7</span>March will mark the fifth year of the running of the Kosa Reef Protection Project.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="2"
+><span class="question-marker">Q2</span>The project is a joint effort by Kosa Marine resources,
+an international group of
+volunteer divers, and island support staff.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="3"
+><span class="question-marker">Q3</span>Divers prepare fish inventories, photo and video records, and take scientific measurements documenting reef status.</span>
+
+For the first time, this year's team will employ protocols developed by the international organisation 'Reef Check'.
+
+<span
+  class="transcript-answer"
+  data-related-question="4"
+><span class="question-marker">Q4</span>The Explorers Club also offers modest expedition grants for expeditions that forge links between space and earth exploration.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="6"
+><span class="question-marker">Q6</span>Expeditions working in extreme environments or using satellite and space related technologies should contact us at the following address Marinalife@gmail.com</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TRANSLATION PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-1-translation"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Толық аударма</h3>
+
+              <p>
+                <strong>Теңіз зерттеулері</strong>
+              </p>
+
+              <p>
+                Дүниежүзілік зерттеу орталығы 1904 жылдан бері жұмыс істеп
+                келеді. Біздің халықаралық кәсіби қоғамымыз бүкіл әлемдегі
+                зерттеушілер мен ғалымдар үшін кездесу орны және біріктіруші
+                күш болды.
+              </p>
+
+              <p>
+                The Explorers Club далалық зерттеулерді, ғылыми зерттеуді
+                дамытуға және зерттеуге деген табиғи ұмтылысты сақтау аса
+                маңызды деген идеяға арналған.
+              </p>
+
+              <p>
+                Біз бұл мақсаттарды зерттеу гранттарын, білім беру дәрістерін
+                және жарияланымдарды, экспедицияны жоспарлауға көмекті,
+                қызықты шытырман оқиғалы саяхат бағдарламаларын және ғылым
+                мен зерттеудің әртүрлі салаларындағы сарапшылар кездесіп,
+                идеяларымен алмаса алатын форумды ұсыну арқылы қолдаймыз.
+              </p>
+
+              <p>
+                Наурыз айында Kosa Reef Protection Project жобасының жұмыс
+                істеп келе жатқанына бес жыл толады.
+              </p>
+
+              <p>
+                Жоба Kosa Marine resources, халықаралық ерікті
+                сүңгуірлер тобы және аралдағы қолдау қызметкерлерінің
+                бірлескен жұмысы болып табылады.
+              </p>
+
+              <p>
+                Сүңгуірлер балықтардың тізімін дайындайды, фото және бейне
+                жазбалар жасайды және рифтің жағдайын құжаттайтын ғылыми
+                өлшемдер жүргізеді.
+              </p>
+
+              <p>
+                Биылғы команда алғаш рет халықаралық 'Reef Check'
+                ұйымы әзірлеген хаттамаларды қолданады.
+              </p>
+
+              <p>
+                The Explorers Club ғарыш пен Жерді зерттеу арасындағы
+                байланысты қалыптастыратын экспедицияларға шағын
+                экспедициялық гранттар да ұсынады.
+              </p>
+
+              <p>
+                Экстремалды ортада жұмыс істейтін немесе жерсеріктік және
+                ғарышқа қатысты технологияларды пайдаланатын экспедициялар
+                бізбен мына мекенжай бойынша байланысуы керек:
+                Marinalife@gmail.com
+              </p>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Полный перевод</h3>
+
+              <p>
+                <strong>Морские исследования</strong>
+              </p>
+
+              <p>
+                Всемирный центр исследований работает с 1904 года.
+                Наше международное профессиональное общество стало местом
+                встречи и объединяющей силой для исследователей и учёных
+                со всего мира.
+              </p>
+
+              <p>
+                The Explorers Club занимается развитием полевых
+                исследований, научных изысканий и поддерживает идею о том,
+                что крайне важно сохранять естественное стремление человека
+                к исследованиям.
+              </p>
+
+              <p>
+                Мы поддерживаем эти цели, предоставляя исследовательские
+                гранты, образовательные лекции и публикации, помощь
+                в планировании экспедиций, увлекательные программы
+                приключенческих путешествий, а также форум, на котором
+                специалисты из разных областей науки и исследований могут
+                встречаться и обмениваться идеями.
+              </p>
+
+              <p>
+                В марте исполнится пять лет с начала работы проекта
+                Kosa Reef Protection Project.
+              </p>
+
+              <p>
+                Проект является совместной работой Kosa Marine resources,
+                международной группы дайверов-добровольцев и сотрудников
+                поддержки на острове.
+              </p>
+
+              <p>
+                Дайверы составляют списки рыб, делают фото- и видеозаписи
+                и проводят научные измерения, документирующие состояние рифа.
+              </p>
+
+              <p>
+                Впервые в этом году команда будет использовать протоколы,
+                разработанные международной организацией 'Reef Check'.
+              </p>
+
+              <p>
+                The Explorers Club также предлагает небольшие
+                экспедиционные гранты экспедициям, которые устанавливают
+                связь между исследованием космоса и Земли.
+              </p>
+
+              <p>
+                Экспедиции, работающие в экстремальных условиях или
+                использующие спутниковые и космические технологии, должны
+                связаться с нами по следующему адресу:
+                Marinalife@gmail.com
+              </p>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VOCABULARY PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-1-vocabulary"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>exploration</strong>
+                  <span>— зерттеу, жаңа аумақтарды зерттеу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>professional society</strong>
+                  <span>— кәсіби қоғам</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>meeting point</strong>
+                  <span>— кездесу орны</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>unifying force</strong>
+                  <span>— біріктіруші күш</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>advancement</strong>
+                  <span>— даму, ілгерілеу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>field research</strong>
+                  <span>— далалық зерттеу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>scientific exploration</strong>
+                  <span>— ғылыми зерттеу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>research grants</strong>
+                  <span>— зерттеу гранттары</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>expedition planning assistance</strong>
+                  <span>— экспедицияны жоспарлауға көмек</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>exchange ideas</strong>
+                  <span>— идеялармен алмасу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>joint effort</strong>
+                  <span>— бірлескен жұмыс</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>volunteer divers</strong>
+                  <span>— ерікті сүңгуірлер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>fish inventories</strong>
+                  <span>— балықтардың тізімі</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>scientific measurements</strong>
+                  <span>— ғылыми өлшемдер</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>reef status</strong>
+                  <span>— рифтің жағдайы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>modest expedition grants</strong>
+                  <span>— шағын экспедициялық гранттар</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>extreme environments</strong>
+                  <span>— экстремалды орталар</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">Paraphrases</h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>providing educational lectures and publications</strong>
+                  <span>→ set the goals of educational lectures and publications</span>
+                  <small>
+                    Білім беру дәрістері мен жарияланымдарын ұсыну
+                    → осындай мақсаттарды белгілеу.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>a joint effort</strong>
+                  <span>→ works together with</span>
+                  <small>
+                    Бірлескен жұмыс → бірге жұмыс істеу.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>documenting reef status</strong>
+                  <span>→ observing the condition of the reef</span>
+                  <small>
+                    Рифтің жағдайын құжаттау
+                    → рифтің жағдайын бақылау.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>offers modest expedition grants</strong>
+                  <span>→ are likely to get modest expedition grants</span>
+                  <small>
+                    Шағын гранттар ұсынады
+                    → шағын гранттар ала алады.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>a forum where experts can meet to exchange ideas</strong>
+                  <span>→ where researchers can meet and exchange ideas</span>
+                  <small>
+                    Сарапшылар кездесіп, идеялармен алмасатын форум.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>contact us at the following address</strong>
+                  <span>→ contact via email</span>
+                  <small>
+                    Көрсетілген мекенжай бойынша байланысу
+                    → электрондық пошта арқылы байланысу.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>March will mark the fifth year</strong>
+                  <span>→ birthday month of the project</span>
+                  <small>
+                    Наурызда жобаға бес жыл толады
+                    → жобаның мерейтой айы.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>the advancement of field research</strong>
+                  <span>→ the type of advancement which is supported</span>
+                  <small>
+                    Далалық зерттеулерді дамыту
+                    → қолдау көрсетілетін даму түрі.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>exploration</strong>
+                  <span>— исследование, изучение новых территорий</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>professional society</strong>
+                  <span>— профессиональное общество</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>meeting point</strong>
+                  <span>— место встречи</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>unifying force</strong>
+                  <span>— объединяющая сила</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>advancement</strong>
+                  <span>— развитие, продвижение</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>field research</strong>
+                  <span>— полевое исследование</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>scientific exploration</strong>
+                  <span>— научное исследование</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>research grants</strong>
+                  <span>— исследовательские гранты</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>expedition planning assistance</strong>
+                  <span>— помощь в планировании экспедиции</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>exchange ideas</strong>
+                  <span>— обмениваться идеями</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>joint effort</strong>
+                  <span>— совместная работа</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>volunteer divers</strong>
+                  <span>— дайверы-добровольцы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>fish inventories</strong>
+                  <span>— списки рыб</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>scientific measurements</strong>
+                  <span>— научные измерения</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>reef status</strong>
+                  <span>— состояние рифа</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>modest expedition grants</strong>
+                  <span>— небольшие экспедиционные гранты</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>extreme environments</strong>
+                  <span>— экстремальные условия</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">Paraphrases</h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>providing educational lectures and publications</strong>
+                  <span>→ set the goals of educational lectures and publications</span>
+                  <small>
+                    Предоставлять образовательные лекции и публикации
+                    → ставить такие цели.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>a joint effort</strong>
+                  <span>→ works together with</span>
+                  <small>
+                    Совместная работа → работать вместе.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>documenting reef status</strong>
+                  <span>→ observing the condition of the reef</span>
+                  <small>
+                    Документировать состояние рифа
+                    → наблюдать за состоянием рифа.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>offers modest expedition grants</strong>
+                  <span>→ are likely to get modest expedition grants</span>
+                  <small>
+                    Предлагает небольшие гранты
+                    → могут получить небольшие гранты.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>a forum where experts can meet to exchange ideas</strong>
+                  <span>→ where researchers can meet and exchange ideas</span>
+                  <small>
+                    Форум, где специалисты встречаются и обмениваются идеями.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>contact us at the following address</strong>
+                  <span>→ contact via email</span>
+                  <small>
+                    Связаться по указанному адресу
+                    → связаться по электронной почте.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>March will mark the fifth year</strong>
+                  <span>→ birthday month of the project</span>
+                  <small>
+                    В марте проекту исполнится пять лет
+                    → месяц годовщины проекта.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>the advancement of field research</strong>
+                  <span>→ the type of advancement which is supported</span>
+                  <small>
+                    Развитие полевых исследований
+                    → поддерживаемый вид развития.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STRATEGY PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-1-strategy"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Бұл Listening тапсырмасын қалай орындау керек?</h3>
+
+              <div class="strategy-step">
+                <strong>1. Сұрақтардағы негізгі сөздерді алдын ала белгілеу</strong>
+
+                <p>
+                  Аудионы тыңдамас бұрын organization, works together,
+                  condition of the reef, grants, exchange ideas, contact,
+                  birthday month және advancement сияқты сөздерді белгілеу
+                  керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>2. Дәл сол сөзді емес, мағынасы ұқсас сөзді күту</strong>
+
+                <p>
+                  Listening тапсырмаларында сұрақтағы сөздер аудиода көбіне
+                  дәл қайталанбайды. Мысалы, works together аудиода
+                  joint effort деп, observing the condition аудиода
+                  documenting reef status деп берілген.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>3. Ұйымдар мен жобалардың атауларын шатастырмау</strong>
+
+                <p>
+                  Мәтінде The Explorers Club, Kosa Reef Protection Project
+                  және Reef Check аталады. Әрқайсысының қызметін бөлек есте
+                  сақтау керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>4. Жауапты дәлелдейтін сөйлемді табу</strong>
+
+                <p>
+                  Әр жауап мәтіндегі нақты бір сөйлемге сүйенеді.
+                  Нәтижені көрсеткеннен кейін Transcript бөлімінде сол
+                  сөйлемдер Q1–Q8 белгілерімен көрсетіледі.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">Сұрақтар бойынша шешу жолы</h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 1</strong>
+                  <p>
+                    educational lectures, publications, expedition
+                    assistance және travel programmes деген сөздерді тыңдау
+                    керек. Олардың барлығын ұсынатын ұйым — The Explorers Club.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 2</strong>
+                  <p>
+                    works together with тіркесінің аудиодағы баламасы —
+                    a joint effort. Island support staff volunteer divers
+                    тобымен бірге жұмыс істейді.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 3</strong>
+                  <p>
+                    fish inventories, photo and video records және scientific
+                    measurements рифтің жағдайын бақылауды білдіреді.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 4</strong>
+                  <p>
+                    extreme environments деген тіркестен кейін гранттар туралы
+                    ақпаратқа назар аудару керек. Дұрыс жауап —
+                    modest expedition grants.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 5</strong>
+                  <p>
+                    meet and exchange ideas тіркесі мәтінде forum сөзімен
+                    бірге берілген.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 6</strong>
+                  <p>
+                    contact деген сөзден кейін электрондық пошта мекенжайы
+                    айтылады. Сондықтан байланысу тәсілі — via email.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 7</strong>
+                  <p>
+                    birthday month сөз тіркесі мәтіндегі
+                    “March will mark the fifth year” сөйлемімен
+                    перефразаланған.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 8</strong>
+                  <p>
+                    advancement сөзінен кейін бірден field research
+                    айтылған. Сондықтан дұрыс жауап — of field research.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Как нужно было решать этот Listening?</h3>
+
+              <div class="strategy-step">
+                <strong>1. Заранее выделить ключевые слова в вопросах</strong>
+
+                <p>
+                  Перед прослушиванием нужно отметить слова organization,
+                  works together, condition of the reef, grants,
+                  exchange ideas, contact, birthday month и advancement.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>
+                  2. Ожидать не точное повторение, а близкое значение
+                </strong>
+
+                <p>
+                  В заданиях по Listening слова из вопроса часто не
+                  повторяются дословно. Например, works together в аудио
+                  передано как joint effort, а observing the condition —
+                  как documenting reef status.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>3. Не путать названия организаций и проектов</strong>
+
+                <p>
+                  В тексте упоминаются The Explorers Club,
+                  Kosa Reef Protection Project и Reef Check.
+                  Нужно отдельно понимать функцию каждого из них.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>4. Найти предложение, доказывающее ответ</strong>
+
+                <p>
+                  Каждый правильный ответ подтверждается конкретным
+                  предложением. После показа результата в Transcript
+                  эти предложения отмечаются метками Q1–Q8.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Как решать каждый вопрос
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 1</strong>
+                  <p>
+                    Нужно услышать educational lectures, publications,
+                    expedition assistance и travel programmes.
+                    Все эти возможности предоставляет The Explorers Club.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 2</strong>
+                  <p>
+                    Фраза works together with перефразирована в аудио
+                    как a joint effort. Сотрудники поддержки острова
+                    работают вместе с volunteer divers.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 3</strong>
+                  <p>
+                    Fish inventories, photo and video records и scientific
+                    measurements означают наблюдение за состоянием рифа.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 4</strong>
+                  <p>
+                    После слов extreme environments нужно обратить внимание
+                    на информацию о грантах. Правильный ответ —
+                    modest expedition grants.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 5</strong>
+                  <p>
+                    Фраза meet and exchange ideas в тексте употребляется
+                    вместе со словом forum.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 6</strong>
+                  <p>
+                    После слова contact в тексте указан адрес электронной
+                    почты. Значит, связаться нужно via email.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 7</strong>
+                  <p>
+                    Фраза birthday month перефразирует предложение
+                    “March will mark the fifth year”.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 8</strong>
+                  <p>
+                    Сразу после слова advancement говорится field research.
+                    Поэтому правильный ответ — of field research.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </article>
+            <!-- LISTENING 2 -->
+
+      <article
+        class="listening-card"
+        id="listening-2"
+        data-listening-id="2"
+      >
+
+        <div class="listening-number">
+          Listening 2 · Questions 9–16
+        </div>
+
+        <h2 class="listening-title">Good sources of energy</h2>
+
+        <p class="audio-file-name">
+          Новая запись 37.m4a
+        </p>
+
+        <div class="audio-box">
+          <audio controls preload="metadata">
+            <source
+              src="Новая запись 37.m4a"
+              type="audio/mp4"
+            >
+
+            <span class="language-content lang-kk">
+              Браузеріңіз аудио файлды қолдамайды.
+            </span>
+
+            <span class="language-content lang-ru">
+              Ваш браузер не поддерживает аудиофайл.
+            </span>
+          </audio>
+        </div>
+
+        <div class="tab-buttons">
+
+          <button
+            type="button"
+            class="tab-button active"
+            data-tab-target="listening-2-test"
+          >
+            Test
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-2-transcript"
+          >
+            Transcript
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-2-translation"
+          >
+            <span class="language-content lang-kk">Аударма</span>
+            <span class="language-content lang-ru">Перевод</span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-2-vocabulary"
+          >
+            Vocabulary
+          </button>
+
+          <button
+            type="button"
+            class="tab-button"
+            data-tab-target="listening-2-strategy"
+          >
+            <span class="language-content lang-kk">
+              Қалай орындау керек
+            </span>
+
+            <span class="language-content lang-ru">
+              Как решить
+            </span>
+          </button>
+
+        </div>
+
+        <!-- TEST PANEL -->
+
+        <div
+          class="tab-panel active"
+          id="listening-2-test"
+        >
+
+          <p class="test-instruction">
+
+            <span class="language-content lang-kk">
+              Әр сұрақ бойынша бір дұрыс жауапты таңдаңыз.
+              Нәтижені көрсеткеннен кейін дұрыс жауап жасыл түспен,
+              ал қате таңдалған жауап қызыл түспен белгіленеді.
+            </span>
+
+            <span class="language-content lang-ru">
+              Выберите один правильный ответ в каждом вопросе.
+              После показа результата правильный ответ будет выделен
+              зелёным, а выбранный неправильный — красным.
+            </span>
+
+          </p>
+
+          <form class="listening-test-form">
+
+            <!-- QUESTION 9 -->
+
+            <div
+              class="question-card"
+              data-question="9"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 9</span>
+
+              <p class="question-text">
+                Lights and computers use ...
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question9"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>light</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question9"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>coal</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question9"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>energy</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question9"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>source</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: C) energy</h4>
+
+                  <p>
+                    Мәтіннің басында адамдарға шамдарды жағу және
+                    компьютерлерді пайдалану үшін энергия қажет екені
+                    тікелей айтылады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “People need energy so we can turn on our lights,
+                    use our computers, cook our food and lots more.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: C) energy</h4>
+
+                  <p>
+                    В начале текста прямо говорится, что людям нужна
+                    энергия, чтобы включать свет и пользоваться
+                    компьютерами.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “People need energy so we can turn on our lights,
+                    use our computers, cook our food and lots more.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 10 -->
+
+            <div
+              class="question-card"
+              data-question="10"
+              data-correct="A"
+            >
+
+              <span class="question-number">Question 10</span>
+
+              <p class="question-text">
+                We ... use the sun's energy for electricity.
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question10"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>can</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question10"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>can’t</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question10"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>are banned</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question10"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>are not allowed</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: A) can</h4>
+
+                  <p>
+                    Мәтінде күн жиі түсетін жерлерде күн энергиясын
+                    пайдалануға болатыны айтылған. Сондықтан мүмкіндік
+                    мағынасындағы can сөзі дұрыс.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In places where it is often sunny, we can use
+                    energy from the sun.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: A) can</h4>
+
+                  <p>
+                    В тексте сказано, что в солнечных местах мы можем
+                    использовать энергию солнца. Поэтому подходит
+                    модальный глагол can.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In places where it is often sunny, we can use
+                    energy from the sun.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 11 -->
+
+            <div
+              class="question-card"
+              data-question="11"
+              data-correct="B"
+            >
+
+              <span class="question-number">Question 11</span>
+
+              <p class="question-text">
+                A windy hill would be ... to get energy.
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question11"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>a worst place</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question11"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>a good place</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question11"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>a forbidden place</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question11"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>not a convenient place</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: B) a good place</h4>
+
+                  <p>
+                    Жел көп соғатын жерлерде жел энергиясын пайдалануға
+                    болады. Сондықтан желді төбе энергия алу үшін қолайлы
+                    жер болып саналады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In windy places we can use wind power.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: B) a good place</h4>
+
+                  <p>
+                    В ветреных местах можно использовать энергию ветра.
+                    Следовательно, ветреный холм является хорошим местом
+                    для получения энергии.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In windy places we can use wind power.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 12 -->
+
+            <div
+              class="question-card"
+              data-question="12"
+              data-correct="D"
+            >
+
+              <span class="question-number">Question 12</span>
+
+              <p class="question-text">
+                Using sun, water and wind for energy, ...
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question12"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>pollutes the soils</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question12"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>pollutes the environment</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question12"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>kills animals</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question12"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>good for the environment</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>
+                    Дұрыс жауап: D) good for the environment
+                  </h4>
+
+                  <p>
+                    Күн, су және жел энергиясы қоршаған ортаға зиян
+                    келтірмейтін таза энергия көздері ретінде сипатталған.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The best sources of energy don't hurt the
+                    environment and won't run out.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>
+                    Правильный ответ: D) good for the environment
+                  </h4>
+
+                  <p>
+                    Солнечная, водная и ветровая энергия описываются
+                    как источники, которые не вредят окружающей среде.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “The best sources of energy don't hurt the
+                    environment and won't run out.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 13 -->
+
+            <div
+              class="question-card"
+              data-question="13"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 13</span>
+
+              <p class="question-text">
+                Sometimes ... fly into wind machines.
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question13"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>planes</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question13"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>clouds</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question13"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>birds</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question13"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>bats</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: C) birds</h4>
+
+                  <p>
+                    Мәтінде жел қондырғыларын құстар көп ұшатын жерге
+                    орнатпау керектігі айтылады, себебі құстар
+                    қондырғыларға соғылып қалуы мүмкін.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...we should not put wind machines where we know
+                    lots of birds will be flying, because they might
+                    fly into the machines.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: C) birds</h4>
+
+                  <p>
+                    В тексте сказано, что нельзя устанавливать ветряные
+                    машины там, где летает много птиц, потому что они
+                    могут влететь в эти машины.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “...we should not put wind machines where we know
+                    lots of birds will be flying, because they might
+                    fly into the machines.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 14 -->
+
+            <div
+              class="question-card"
+              data-question="14"
+              data-correct="B"
+            >
+
+              <span class="question-number">Question 14</span>
+
+              <p class="question-text">
+                The amount of coal and oil left in the ground is getting ...
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question14"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>bigger</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question14"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>smaller</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question14"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>better</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question14"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>more frequent</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: B) smaller</h4>
+
+                  <p>
+                    Көмір мен мұнайдың қоры мәңгілікке жетпейді.
+                    Демек, жер астында қалған көмір мен мұнай мөлшері
+                    біртіндеп азайып келеді.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “There isn't enough coal and oil to last us
+                    forever...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: B) smaller</h4>
+
+                  <p>
+                    Запасов угля и нефти недостаточно навсегда.
+                    Следовательно, их количество в земле постепенно
+                    становится меньше.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “There isn't enough coal and oil to last us
+                    forever...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 15 -->
+
+            <div
+              class="question-card"
+              data-question="15"
+              data-correct="D"
+            >
+
+              <span class="question-number">Question 15</span>
+
+              <p class="question-text">
+                What energy sources can’t last forever?
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question15"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>wind energy</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question15"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>all the above</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question15"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>solar energy</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question15"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>coal and oil</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: D) coal and oil</h4>
+
+                  <p>
+                    Мәтінде көмір мен мұнайдың мәңгілікке жетпейтіні
+                    тікелей айтылған. Жел және күн энергиясы жаңартылатын
+                    энергия көздеріне жатады.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “There isn't enough coal and oil to last us
+                    forever...”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: D) coal and oil</h4>
+
+                  <p>
+                    В тексте прямо сказано, что угля и нефти не хватит
+                    навсегда. Ветер и солнечная энергия являются
+                    возобновляемыми источниками.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “There isn't enough coal and oil to last us
+                    forever...”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- QUESTION 16 -->
+
+            <div
+              class="question-card"
+              data-question="16"
+              data-correct="C"
+            >
+
+              <span class="question-number">Question 16</span>
+
+              <p class="question-text">
+                Where are the best places for solar stations?
+              </p>
+
+              <div class="answer-options">
+
+                <label class="answer-option" data-option="A">
+                  <input
+                    type="radio"
+                    name="listening2-question16"
+                    value="A"
+                  >
+                  <span class="answer-letter">A)</span>
+                  <span>cold places</span>
+                </label>
+
+                <label class="answer-option" data-option="B">
+                  <input
+                    type="radio"
+                    name="listening2-question16"
+                    value="B"
+                  >
+                  <span class="answer-letter">B)</span>
+                  <span>rivers and oceans</span>
+                </label>
+
+                <label class="answer-option" data-option="C">
+                  <input
+                    type="radio"
+                    name="listening2-question16"
+                    value="C"
+                  >
+                  <span class="answer-letter">C)</span>
+                  <span>sunny places</span>
+                </label>
+
+                <label class="answer-option" data-option="D">
+                  <input
+                    type="radio"
+                    name="listening2-question16"
+                    value="D"
+                  >
+                  <span class="answer-letter">D)</span>
+                  <span>windy places</span>
+                </label>
+
+              </div>
+
+              <div class="question-explanation">
+
+                <div class="language-content lang-kk">
+                  <h4>Дұрыс жауап: C) sunny places</h4>
+
+                  <p>
+                    Күн энергиясын күн жиі түсетін жерлерде тиімді
+                    пайдалануға болады. Сондықтан күн станциялары үшін
+                    ең жақсы орын — күн шуақты жерлер.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In places where it is often sunny, we can use
+                    energy from the sun.”
+                  </p>
+                </div>
+
+                <div class="language-content lang-ru">
+                  <h4>Правильный ответ: C) sunny places</h4>
+
+                  <p>
+                    Солнечную энергию лучше всего использовать в местах,
+                    где часто бывает солнечно. Поэтому солнечные станции
+                    следует размещать в солнечных местах.
+                  </p>
+
+                  <p class="evidence-quote">
+                    “In places where it is often sunny, we can use
+                    energy from the sun.”
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="result-actions">
+
+              <button
+                type="button"
+                class="primary-button show-listening-result"
+                data-listening="2"
+              >
+                <span class="language-content lang-kk">
+                  Нәтижені көрсету
+                </span>
+
+                <span class="language-content lang-ru">
+                  Показать результат
+                </span>
+              </button>
+
+              <button
+                type="button"
+                class="secondary-button reset-listening-test"
+                data-listening="2"
+              >
+                <span class="language-content lang-kk">
+                  Жауаптарды тазарту
+                </span>
+
+                <span class="language-content lang-ru">
+                  Очистить ответы
+                </span>
+              </button>
+
+            </div>
+
+            <div
+              class="block-result"
+              id="listening-2-result"
+            >
+              <strong>
+                <span class="language-content lang-kk">
+                  Listening 2 нәтижесі:
+                </span>
+
+                <span class="language-content lang-ru">
+                  Результат Listening 2:
+                </span>
+
+                <span id="listening-2-score">0/8</span>
+              </strong>
+
+              <p id="listening-2-result-message"></p>
+            </div>
+
+          </form>
+        </div>
+                <!-- TRANSCRIPT PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-2-transcript"
+        >
+
+          <div class="content-block">
+
+            <h3>Transcript</h3>
+
+            <div
+              class="locked-message transcript-locked-message"
+              data-listening="2"
+            >
+              <span class="language-content lang-kk">
+                Нәтижені көрсеткеннен кейін Transcript ішіндегі жауап
+                орналасқан сөйлемдер Q9–Q16 белгілерімен ерекшеленеді.
+              </span>
+
+              <span class="language-content lang-ru">
+                После показа результата предложения с ответами
+                в Transcript будут выделены метками Q9–Q16.
+              </span>
+            </div>
+
+            <div
+              class="transcript-text"
+              id="listening-2-transcript-text"
+            >
+              <strong>Good sources of energy</strong>
+
+<span
+  class="transcript-answer"
+  data-related-question="9"
+><span class="question-marker">Q9</span>People need energy so we can turn on our lights, use our computers, cook our food and lots more.</span>
+
+Some ways of getting the energy we need for our electricity are better than others.
+
+<span
+  class="transcript-answer"
+  data-related-question="14 15"
+><span class="question-marker">Q14</span><span class="question-marker">Q15</span>There isn't enough coal and oil to last us forever, and taking them out of the ground is bad for the environment.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="12"
+><span class="question-marker">Q12</span>The best sources of energy don't hurt the environment and won't run out.</span>
+
+<span
+  class="transcript-answer"
+  data-related-question="10 16"
+><span class="question-marker">Q10</span><span class="question-marker">Q16</span>In places where it is often sunny, we can use energy from the sun.</span>
+
+We can also use water power from rivers and from waves in the sea.
+
+<span
+  class="transcript-answer"
+  data-related-question="11"
+><span class="question-marker">Q11</span>In windy places we can use wind power.</span>
+
+These sources of energy don't use and cause pollution.
+
+Nowadays many countries develop alternative sources of energy. They built wintervince , water and solar stations. However even we will clean energy
+
+We always have to be careful of the environment.
+
+<span
+  class="transcript-answer"
+  data-related-question="13"
+><span class="question-marker">Q13</span>For example, we should not put wind machines where we know lots of birds will be flying, because they might fly into the machines.</span>
+
+But if we choose the right kind of energy in the right place, we will have good, clean energy for the future.
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TRANSLATION PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-2-translation"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Толық аударма</h3>
+
+              <p>
+                <strong>Жақсы энергия көздері</strong>
+              </p>
+
+              <p>
+                Адамдарға энергия қажет, сондықтан біз шамдарымызды
+                жаға аламыз, компьютерлерімізді пайдалана аламыз,
+                тамақ дайындай аламыз және тағы да көптеген нәрселерді
+                істей аламыз.
+              </p>
+
+              <p>
+                Электр энергиясына қажетті энергияны алудың кейбір
+                тәсілдері басқаларына қарағанда жақсырақ.
+              </p>
+
+              <p>
+                Бізге мәңгілікке жететіндей көмір мен мұнай жеткіліксіз,
+                ал оларды жер астынан шығару қоршаған ортаға зиян.
+              </p>
+
+              <p>
+                Ең жақсы энергия көздері қоршаған ортаға зиян келтірмейді
+                және таусылмайды.
+              </p>
+
+              <p>
+                Күн жиі түсетін жерлерде біз күн энергиясын пайдалана аламыз.
+              </p>
+
+              <p>
+                Біз сондай-ақ өзендерден және теңіздегі толқындардан
+                алынатын су энергиясын пайдалана аламыз.
+              </p>
+
+              <p>
+                Желді жерлерде біз жел энергиясын пайдалана аламыз.
+              </p>
+
+              <p>
+                Бұл энергия көздері пайдаланбайды және ластануды тудырады.
+              </p>
+
+              <p>
+                Қазіргі уақытта көптеген елдер баламалы энергия көздерін
+                дамытады. Олар wintervince, су және күн станцияларын салды.
+                Алайда тіпті біз таза энергия боламыз.
+              </p>
+
+              <p>
+                Біз әрқашан қоршаған ортаға мұқият болуымыз керек.
+              </p>
+
+              <p>
+                Мысалы, құстардың көп ұшатынын білетін жерлерге жел
+                машиналарын қоймауымыз керек, себебі олар машиналарға
+                ұшып кіріп кетуі мүмкін.
+              </p>
+
+              <p>
+                Бірақ дұрыс жерде дұрыс энергия түрін таңдасақ,
+                болашақта жақсы, таза энергияға ие боламыз.
+              </p>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Полный перевод</h3>
+
+              <p>
+                <strong>Хорошие источники энергии</strong>
+              </p>
+
+              <p>
+                Людям нужна энергия, чтобы мы могли включать свет,
+                пользоваться компьютерами, готовить еду и делать
+                многое другое.
+              </p>
+
+              <p>
+                Некоторые способы получения энергии, необходимой нам
+                для электричества, лучше других.
+              </p>
+
+              <p>
+                Угля и нефти недостаточно, чтобы их хватило нам навсегда,
+                а извлечение их из земли вредит окружающей среде.
+              </p>
+
+              <p>
+                Лучшие источники энергии не вредят окружающей среде
+                и не иссякают.
+              </p>
+
+              <p>
+                В местах, где часто бывает солнечно, мы можем
+                использовать энергию солнца.
+              </p>
+
+              <p>
+                Мы также можем использовать энергию воды из рек
+                и морских волн.
+              </p>
+
+              <p>
+                В ветреных местах мы можем использовать энергию ветра.
+              </p>
+
+              <p>
+                Эти источники энергии не используют и вызывают загрязнение.
+              </p>
+
+              <p>
+                В настоящее время многие страны развивают альтернативные
+                источники энергии. Они построили wintervince, водные
+                и солнечные станции. Однако даже мы будем чистой энергией.
+              </p>
+
+              <p>
+                Мы всегда должны бережно относиться к окружающей среде.
+              </p>
+
+              <p>
+                Например, не следует устанавливать ветряные машины там,
+                где, как мы знаем, летает много птиц, потому что они
+                могут влететь в эти машины.
+              </p>
+
+              <p>
+                Но если мы выберем правильный вид энергии в правильном
+                месте, у нас будет хорошая, чистая энергия для будущего.
+              </p>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VOCABULARY PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-2-vocabulary"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>source of energy</strong>
+                  <span>— энергия көзі</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>turn on the lights</strong>
+                  <span>— шамдарды жағу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>electricity</strong>
+                  <span>— электр энергиясы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>coal</strong>
+                  <span>— көмір</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>oil</strong>
+                  <span>— мұнай</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>last forever</strong>
+                  <span>— мәңгілікке жету</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>take out of the ground</strong>
+                  <span>— жер астынан шығару</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>environment</strong>
+                  <span>— қоршаған орта</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>run out</strong>
+                  <span>— таусылу</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>solar energy</strong>
+                  <span>— күн энергиясы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>water power</strong>
+                  <span>— су энергиясы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wind power</strong>
+                  <span>— жел энергиясы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pollution</strong>
+                  <span>— ластану</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>alternative sources of energy</strong>
+                  <span>— баламалы энергия көздері</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>solar station</strong>
+                  <span>— күн электр станциясы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wind machine</strong>
+                  <span>— жел қондырғысы</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>clean energy</strong>
+                  <span>— таза энергия</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">Paraphrases</h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>People need energy so we can turn on our lights and use our computers</strong>
+                  <span>→ Lights and computers use energy</span>
+                  <small>
+                    Шамдар мен компьютерлерді пайдалану үшін энергия қажет
+                    → шамдар мен компьютерлер энергияны пайдаланады.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>we can use energy from the sun</strong>
+                  <span>→ we can use the sun's energy for electricity</span>
+                  <small>
+                    Күннен алынатын энергияны пайдалану
+                    → электр үшін күн энергиясын пайдалану.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>in windy places we can use wind power</strong>
+                  <span>→ a windy hill would be a good place to get energy</span>
+                  <small>
+                    Желді жерлерде жел энергиясын пайдалануға болады
+                    → желді төбе энергия алуға қолайлы.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>don't hurt the environment</strong>
+                  <span>→ good for the environment</span>
+                  <small>
+                    Қоршаған ортаға зиян келтірмейді
+                    → қоршаған ортаға пайдалы.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>birds might fly into the machines</strong>
+                  <span>→ birds fly into wind machines</span>
+                  <small>
+                    Құстар машиналарға ұшып кіруі мүмкін
+                    → құстар жел машиналарына ұшады.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>There isn't enough coal and oil to last us forever</strong>
+                  <span>→ the amount is getting smaller</span>
+                  <small>
+                    Көмір мен мұнай мәңгілікке жетпейді
+                    → олардың мөлшері азайып келеді.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>coal and oil cannot last forever</strong>
+                  <span>→ energy sources that can’t last forever</span>
+                  <small>
+                    Көмір мен мұнай мәңгілікке жетпейді
+                    → мәңгілікке жетпейтін энергия көздері.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>places where it is often sunny</strong>
+                  <span>→ the best places for solar stations</span>
+                  <small>
+                    Күн жиі түсетін жерлер
+                    → күн станциялары үшін ең жақсы орындар.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Vocabulary</h3>
+
+              <div class="vocabulary-list">
+
+                <div class="vocabulary-item">
+                  <strong>source of energy</strong>
+                  <span>— источник энергии</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>turn on the lights</strong>
+                  <span>— включать свет</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>electricity</strong>
+                  <span>— электричество</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>coal</strong>
+                  <span>— уголь</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>oil</strong>
+                  <span>— нефть</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>last forever</strong>
+                  <span>— существовать вечно, хватить навсегда</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>take out of the ground</strong>
+                  <span>— извлекать из земли</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>environment</strong>
+                  <span>— окружающая среда</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>run out</strong>
+                  <span>— закончиться, иссякнуть</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>solar energy</strong>
+                  <span>— солнечная энергия</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>water power</strong>
+                  <span>— энергия воды</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wind power</strong>
+                  <span>— энергия ветра</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>pollution</strong>
+                  <span>— загрязнение</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>alternative sources of energy</strong>
+                  <span>— альтернативные источники энергии</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>solar station</strong>
+                  <span>— солнечная электростанция</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>wind machine</strong>
+                  <span>— ветряная установка</span>
+                </div>
+
+                <div class="vocabulary-item">
+                  <strong>clean energy</strong>
+                  <span>— чистая энергия</span>
+                </div>
+
+              </div>
+
+              <h3 class="subsection-title">Paraphrases</h3>
+
+              <div class="paraphrase-list">
+
+                <div class="paraphrase-item">
+                  <strong>People need energy so we can turn on our lights and use our computers</strong>
+                  <span>→ Lights and computers use energy</span>
+                  <small>
+                    Людям нужна энергия для света и компьютеров
+                    → свет и компьютеры используют энергию.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>we can use energy from the sun</strong>
+                  <span>→ we can use the sun's energy for electricity</span>
+                  <small>
+                    Использовать энергию солнца
+                    → использовать солнечную энергию для электричества.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>in windy places we can use wind power</strong>
+                  <span>→ a windy hill would be a good place to get energy</span>
+                  <small>
+                    В ветреных местах можно использовать энергию ветра
+                    → ветреный холм подходит для получения энергии.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>don't hurt the environment</strong>
+                  <span>→ good for the environment</span>
+                  <small>
+                    Не вредить окружающей среде
+                    → быть полезным для окружающей среды.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>birds might fly into the machines</strong>
+                  <span>→ birds fly into wind machines</span>
+                  <small>
+                    Птицы могут влететь в машины
+                    → птицы влетают в ветряные установки.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>There isn't enough coal and oil to last us forever</strong>
+                  <span>→ the amount is getting smaller</span>
+                  <small>
+                    Угля и нефти не хватит навсегда
+                    → их количество становится меньше.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>coal and oil cannot last forever</strong>
+                  <span>→ energy sources that can’t last forever</span>
+                  <small>
+                    Уголь и нефть не могут существовать вечно
+                    → источники энергии, которых не хватит навсегда.
+                  </small>
+                </div>
+
+                <div class="paraphrase-item">
+                  <strong>places where it is often sunny</strong>
+                  <span>→ the best places for solar stations</span>
+                  <small>
+                    Места, где часто бывает солнечно
+                    → лучшие места для солнечных станций.
+                  </small>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STRATEGY PANEL -->
+
+        <div
+          class="tab-panel"
+          id="listening-2-strategy"
+        >
+
+          <div class="content-block">
+
+            <div class="language-content lang-kk">
+
+              <h3>Бұл Listening тапсырмасын қалай орындау керек?</h3>
+
+              <div class="strategy-step">
+                <strong>1. Энергия түрлерін бөлек жазып алу</strong>
+
+                <p>
+                  Аудиода coal, oil, sun, water және wind энергия көздері
+                  аталады. Оларды жаңартылатын және таусылатын энергия
+                  көздері ретінде ажырату керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>2. Орынды энергия көзімен сәйкестендіру</strong>
+
+                <p>
+                  Sunny places — solar energy, windy places — wind power,
+                  rivers and sea waves — water power. Бұл сәйкестіктер
+                  бірнеше сұраққа жауап береді.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>3. Болымсыз мағынаға назар аудару</strong>
+
+                <p>
+                  Don't hurt, won't run out, isn't enough және can’t last
+                  forever сияқты тіркестердің мағынасын дұрыс түсіну керек.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>4. Қоршаған ортаға қатысты қауіптерді тыңдау</strong>
+
+                <p>
+                  Таза энергия пайдалы болғанымен, жел қондырғыларын дұрыс
+                  жерге орналастырмаса, құстарға қауіп төнуі мүмкін.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">Сұрақтар бойынша шешу жолы</h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 9</strong>
+                  <p>
+                    Lights және computers сөздерінен кейін мәтіннің басындағы
+                    People need energy сөйлеміне назар аудару керек.
+                    Жауап — energy.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 10</strong>
+                  <p>
+                    Аудиода “we can use energy from the sun” деп нақты
+                    айтылады. Сондықтан дұрыс сөз — can.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 11</strong>
+                  <p>
+                    Windy hill сұрақтағы орын, ал мәтінде windy places
+                    жел энергиясын пайдалануға қолайлы екені айтылған.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 12</strong>
+                  <p>
+                    Sun, water және wind мәтінде қоршаған ортаға зиян
+                    келтірмейтін жақсы энергия көздері ретінде берілген.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 13</strong>
+                  <p>
+                    Wind machines тіркесін естігеннен кейін birds сөзіне
+                    назар аудару керек. Құстар қондырғыларға ұшып кіруі мүмкін.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 14</strong>
+                  <p>
+                    “There isn't enough coal and oil to last us forever”
+                    деген сөйлем қордың азайып келе жатқанын білдіреді.
+                    Жауап — smaller.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 15</strong>
+                  <p>
+                    Can’t last forever деген тіркес мәтіндегі
+                    “isn't enough coal and oil to last us forever”
+                    сөйлемімен сәйкес келеді.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 16</strong>
+                  <p>
+                    Solar stations үшін sun және sunny сөздерін байланыстыру
+                    керек. Дұрыс орын — sunny places.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="language-content lang-ru">
+
+              <h3>Как нужно было решать этот Listening?</h3>
+
+              <div class="strategy-step">
+                <strong>1. Разделить источники энергии</strong>
+
+                <p>
+                  В аудио упоминаются coal, oil, sun, water и wind.
+                  Нужно различать возобновляемые источники и источники,
+                  запасы которых могут закончиться.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>2. Соотнести место и источник энергии</strong>
+
+                <p>
+                  Sunny places соответствуют solar energy, windy places —
+                  wind power, а rivers и sea waves — water power.
+                  Эти соответствия помогают ответить на несколько вопросов.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>3. Обратить внимание на отрицание</strong>
+
+                <p>
+                  Важно правильно понять выражения don't hurt,
+                  won't run out, isn't enough и can’t last forever.
+                </p>
+              </div>
+
+              <div class="strategy-step">
+                <strong>4. Услышать экологическую опасность</strong>
+
+                <p>
+                  Чистая энергия полезна, но неправильное размещение
+                  ветряных машин может представлять опасность для птиц.
+                </p>
+              </div>
+
+              <h3 class="subsection-title">
+                Как решать каждый вопрос
+              </h3>
+
+              <div class="question-solving-list">
+
+                <div class="question-solving-item">
+                  <strong>Question 9</strong>
+                  <p>
+                    После слов lights и computers нужно вспомнить начало:
+                    “People need energy”. Правильный ответ — energy.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 10</strong>
+                  <p>
+                    В аудио прямо говорится “we can use energy from the sun”.
+                    Поэтому правильное слово — can.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 11</strong>
+                  <p>
+                    Windy hill — это ветреное место, а в тексте сказано,
+                    что в ветреных местах можно использовать энергию ветра.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 12</strong>
+                  <p>
+                    Солнце, вода и ветер представлены как хорошие источники,
+                    которые не вредят окружающей среде.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 13</strong>
+                  <p>
+                    После упоминания wind machines нужно услышать birds.
+                    Именно птицы могут влететь в установки.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 14</strong>
+                  <p>
+                    Фраза “There isn't enough coal and oil to last us forever”
+                    означает, что их количество уменьшается.
+                    Правильный ответ — smaller.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 15</strong>
+                  <p>
+                    Выражение can’t last forever связано с предложением
+                    о том, что угля и нефти недостаточно навсегда.
+                  </p>
+                </div>
+
+                <div class="question-solving-item">
+                  <strong>Question 16</strong>
+                  <p>
+                    Нужно связать solar stations со словами sun и sunny.
+                    Правильный ответ — sunny places.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </article>
+            <!-- LISTENING TOTAL RESULT -->
+
+      <section
+        class="listening-total-result"
+        id="listening-total-result"
+      >
+
+        <h2>
+          <span class="language-content lang-kk">
+            Listening бойынша жалпы нәтиже
+          </span>
+
+          <span class="language-content lang-ru">
+            Общий результат по Listening
+          </span>
+        </h2>
+
+        <div class="total-result-grid">
+
+          <div class="total-result-item">
+            <span>Listening 1</span>
+            <strong id="listening-total-score-1">0/8</strong>
+          </div>
+
+          <div class="total-result-item">
+            <span>Listening 2</span>
+            <strong id="listening-total-score-2">0/8</strong>
+          </div>
+
+          <div class="total-result-item total-result-main">
+            <span>
+              <span class="language-content lang-kk">
+                Жалпы нәтиже
+              </span>
+
+              <span class="language-content lang-ru">
+                Общий результат
+              </span>
+            </span>
+
+            <strong id="listening-total-score">0/16</strong>
+          </div>
+
+        </div>
+
+        <p id="listening-total-message">
+          <span class="language-content lang-kk">
+            Жалпы нәтижені көру үшін екі Listening тапсырмасының
+            нәтижесін де көрсетіңіз.
+          </span>
+
+          <span class="language-content lang-ru">
+            Чтобы увидеть общий результат, покажите результат
+            обоих заданий Listening.
+          </span>
+        </p>
+
+      </section>
+
+    </section>
+
+    <!-- READING БЛОГЫ ОСЫ ЖЕРДЕН БАСТАЛАДЫ -->
+    <!-- РАЗДЕЛ READING БУДЕТ ВСТАВЛЕН СЮДА -->
+
+  <style>
+    .vocabulary-list,
+    .paraphrase-list,
+    .question-solving-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .vocabulary-item,
+    .paraphrase-item,
+    .strategy-step,
+    .question-solving-item {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .vocabulary-item {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .vocabulary-item strong {
+      color: var(--primary-dark);
+    }
+
+    .paraphrase-item {
+      display: grid;
+      gap: 5px;
+    }
+
+    .paraphrase-item strong {
+      color: #1d4ed8;
+    }
+
+    .paraphrase-item span {
+      color: #7c3aed;
+      font-weight: 750;
+    }
+
+    .paraphrase-item small {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .subsection-title {
+      margin-top: 28px !important;
+    }
+
+    .strategy-step {
+      margin-bottom: 12px;
+    }
+
+    .strategy-step strong {
+      color: var(--primary-dark);
+    }
+
+    .strategy-step p,
+    .question-solving-item p {
+      margin: 7px 0 0;
+    }
+
+    .question-solving-item strong {
+      color: #7c3aed;
+    }
+
+    .transcript-text {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 13px;
+      background: #f8fafc;
+      line-height: 1.9;
+    }
+
+    .transcript-answer {
+      transition: 0.25s ease;
+    }
+
+    .transcript-answer .question-marker {
+      display: none;
+    }
+
+    .transcript-answer.revealed {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--highlight);
+      box-shadow: inset 0 -2px 0 var(--highlight-border);
+    }
+
+    .transcript-answer.revealed .question-marker {
+      display: inline-block;
+    }
+
+    .listening-total-result {
+      margin-top: 30px;
+      padding: clamp(20px, 4vw, 30px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .listening-total-result h2 {
+      margin-top: 0;
+    }
+
+    .total-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .total-result-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .total-result-item span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .total-result-item strong {
+      color: var(--primary-dark);
+      font-size: 25px;
+    }
+
+    .total-result-main {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    #listening-total-message {
+      margin: 18px 0 0;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      .total-result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    const listeningScores = {
+      1: null,
+      2: null
+    };
+
+    const totalQuestionsInListening = {
+      1: 8,
+      2: 8
+    };
+
+    function getCurrentLanguage() {
+      return document.documentElement.lang === "ru" ? "ru" : "kk";
+    }
+
+    function setLanguage(language) {
+      document.documentElement.lang = language;
+
+      document
+        .querySelectorAll(".language-button")
+        .forEach((button) => {
+          button.classList.toggle(
+            "active",
+            button.dataset.language === language
+          );
+        });
+
+      localStorage.setItem(
+        "englishTestLanguage",
+        language
+      );
+
+      updateAllResultMessages();
+    }
+
+    document
+      .querySelectorAll(".language-button")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          setLanguage(button.dataset.language);
+        });
+      });
+
+    const savedLanguage =
+      localStorage.getItem("englishTestLanguage") || "kk";
+
+    setLanguage(savedLanguage);
+
+    document
+      .querySelectorAll(".listening-card")
+      .forEach((card) => {
+        const tabButtons =
+          card.querySelectorAll(".tab-button");
+
+        const tabPanels =
+          card.querySelectorAll(".tab-panel");
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetId =
+              button.dataset.tabTarget;
+
+            const targetPanel =
+              document.getElementById(targetId);
+
+            tabButtons.forEach((tabButton) => {
+              tabButton.classList.remove("active");
+            });
+
+            tabPanels.forEach((panel) => {
+              panel.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            if (targetPanel) {
+              targetPanel.classList.add("active");
+            }
+          });
+        });
+      });
+
+    function getResultMessage(score, total) {
+      const percentage =
+        Math.round((score / total) * 100);
+
+      const language =
+        getCurrentLanguage();
+
+      if (language === "kk") {
+        if (percentage === 100) {
+          return "Өте жақсы! Барлық жауап дұрыс.";
+        }
+
+        if (percentage >= 75) {
+          return "Жақсы нәтиже! Қателерді түсіндірме арқылы қайталаңыз.";
+        }
+
+        if (percentage >= 50) {
+          return "Орташа нәтиже. Transcript пен түсіндірмелерді мұқият қараңыз.";
+        }
+
+        return "Аудионы қайта тыңдап, Vocabulary және Paraphrases бөлімдерін қайталаңыз.";
+      }
+
+      if (percentage === 100) {
+        return "Отлично! Все ответы правильные.";
+      }
+
+      if (percentage >= 75) {
+        return "Хороший результат! Разберите ошибки с помощью объяснений.";
+      }
+
+      if (percentage >= 50) {
+        return "Средний результат. Внимательно изучите Transcript и объяснения.";
+      }
+
+      return "Прослушайте аудио ещё раз и повторите Vocabulary и Paraphrases.";
+    }
+
+    function showListeningResult(listeningId) {
+      const listeningCard =
+        document.querySelector(
+          `[data-listening-id="${listeningId}"]`
+        );
+
+      if (!listeningCard) {
+        return;
+      }
+
+      const questionCards =
+        listeningCard.querySelectorAll(
+          ".question-card"
+        );
+
+      let score = 0;
+
+      questionCards.forEach((questionCard) => {
+        const correctAnswer =
+          questionCard.dataset.correct;
+
+        const selectedInput =
+          questionCard.querySelector(
+            'input[type="radio"]:checked'
+          );
+
+        const answerOptions =
+          questionCard.querySelectorAll(
+            ".answer-option"
+          );
+
+        answerOptions.forEach((option) => {
+          option.classList.remove(
+            "correct-answer",
+            "wrong-answer"
+          );
+
+          const optionValue =
+            option.dataset.option;
+
+          if (optionValue === correctAnswer) {
+            option.classList.add(
+              "correct-answer"
+            );
+          }
+
+          if (
+            selectedInput &&
+            optionValue === selectedInput.value &&
+            selectedInput.value !== correctAnswer
+          ) {
+            option.classList.add(
+              "wrong-answer"
+            );
+          }
+        });
+
+        if (
+          selectedInput &&
+          selectedInput.value === correctAnswer
+        ) {
+          score++;
+        }
+
+        const explanation =
+          questionCard.querySelector(
+            ".question-explanation"
+          );
+
+        if (explanation) {
+          explanation.classList.add(
+            "visible"
+          );
+        }
+
+        questionCard
+          .querySelectorAll("input")
+          .forEach((input) => {
+            input.disabled = true;
+          });
+      });
+
+      listeningScores[listeningId] = score;
+
+      const total =
+        questionCards.length;
+
+      const resultBox =
+        document.getElementById(
+          `listening-${listeningId}-result`
+        );
+
+      const scoreElement =
+        document.getElementById(
+          `listening-${listeningId}-score`
+        );
+
+      const messageElement =
+        document.getElementById(
+          `listening-${listeningId}-result-message`
+        );
+
+      if (scoreElement) {
+        scoreElement.textContent =
+          `${score}/${total}`;
+      }
+
+      if (messageElement) {
+        messageElement.textContent =
+          getResultMessage(score, total);
+      }
+
+      if (resultBox) {
+        resultBox.classList.add("visible");
+      }
+
+      revealTranscriptAnswers(listeningId);
+      updateListeningTotalResult();
+
+      if (resultBox) {
+        resultBox.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
+    }
+
+    function revealTranscriptAnswers(listeningId) {
+      const listeningCard =
+        document.querySelector(
+          `[data-listening-id="${listeningId}"]`
+        );
+
+      if (!listeningCard) {
+        return;
+      }
+
+      listeningCard
+        .querySelectorAll(
+          ".transcript-answer"
+        )
+        .forEach((answer) => {
+          answer.classList.add("revealed");
+        });
+
+      listeningCard
+        .querySelectorAll(
+          ".transcript-locked-message"
+        )
+        .forEach((message) => {
+          message.style.display = "none";
+        });
+    }
+
+    function resetListeningTest(listeningId) {
+      const listeningCard =
+        document.querySelector(
+          `[data-listening-id="${listeningId}"]`
+        );
+
+      if (!listeningCard) {
+        return;
+      }
+
+      listeningCard
+        .querySelectorAll(".question-card")
+        .forEach((questionCard) => {
+          questionCard
+            .querySelectorAll(
+              ".answer-option"
+            )
+            .forEach((option) => {
+              option.classList.remove(
+                "correct-answer",
+                "wrong-answer"
+              );
+            });
+
+          questionCard
+            .querySelectorAll(
+              'input[type="radio"]'
+            )
+            .forEach((input) => {
+              input.checked = false;
+              input.disabled = false;
+            });
+
+          const explanation =
+            questionCard.querySelector(
+              ".question-explanation"
+            );
+
+          if (explanation) {
+            explanation.classList.remove(
+              "visible"
+            );
+          }
+        });
+
+      listeningCard
+        .querySelectorAll(
+          ".transcript-answer"
+        )
+        .forEach((answer) => {
+          answer.classList.remove(
+            "revealed"
+          );
+        });
+
+      listeningCard
+        .querySelectorAll(
+          ".transcript-locked-message"
+        )
+        .forEach((message) => {
+          message.style.display = "";
+        });
+
+      const resultBox =
+        document.getElementById(
+          `listening-${listeningId}-result`
+        );
+
+      if (resultBox) {
+        resultBox.classList.remove(
+          "visible"
+        );
+      }
+
+      listeningScores[listeningId] = null;
+
+      const scoreElement =
+        document.getElementById(
+          `listening-${listeningId}-score`
+        );
+
+      if (scoreElement) {
+        scoreElement.textContent =
+          `0/${totalQuestionsInListening[listeningId]}`;
+      }
+
+      const messageElement =
+        document.getElementById(
+          `listening-${listeningId}-result-message`
+        );
+
+      if (messageElement) {
+        messageElement.textContent = "";
+      }
+
+      updateListeningTotalResult();
+
+      const testTabButton =
+        listeningCard.querySelector(
+          `[data-tab-target="listening-${listeningId}-test"]`
+        );
+
+      if (testTabButton) {
+        testTabButton.click();
+      }
+
+      listeningCard.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    document
+      .querySelectorAll(
+        ".show-listening-result"
+      )
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          showListeningResult(
+            button.dataset.listening
+          );
+        });
+      });
+
+    document
+      .querySelectorAll(
+        ".reset-listening-test"
+      )
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          resetListeningTest(
+            button.dataset.listening
+          );
+        });
+      });
+
+    function updateListeningTotalResult() {
+      const score1 =
+        listeningScores[1];
+
+      const score2 =
+        listeningScores[2];
+
+      const score1Element =
+        document.getElementById(
+          "listening-total-score-1"
+        );
+
+      const score2Element =
+        document.getElementById(
+          "listening-total-score-2"
+        );
+
+      const totalScoreElement =
+        document.getElementById(
+          "listening-total-score"
+        );
+
+      const messageElement =
+        document.getElementById(
+          "listening-total-message"
+        );
+
+      if (score1Element) {
+        score1Element.textContent =
+          `${score1 ?? 0}/8`;
+      }
+
+      if (score2Element) {
+        score2Element.textContent =
+          `${score2 ?? 0}/8`;
+      }
+
+      const calculatedTotal =
+        (score1 ?? 0) + (score2 ?? 0);
+
+      if (totalScoreElement) {
+        totalScoreElement.textContent =
+          `${calculatedTotal}/16`;
+      }
+
+      if (!messageElement) {
+        return;
+      }
+
+      const language =
+        getCurrentLanguage();
+
+      if (
+        score1 === null ||
+        score2 === null
+      ) {
+        messageElement.textContent =
+          language === "kk"
+            ? "Жалпы нәтижені көру үшін екі Listening тапсырмасын да тексеріңіз."
+            : "Чтобы увидеть общий результат, проверьте оба задания Listening.";
+
+        return;
+      }
+
+      const percentage =
+        Math.round(
+          (calculatedTotal / 16) * 100
+        );
+
+      messageElement.textContent =
+        language === "kk"
+          ? `Сіздің Listening бойынша нәтижеңіз: ${calculatedTotal}/16 (${percentage}%).`
+          : `Ваш результат по Listening: ${calculatedTotal}/16 (${percentage}%).`;
+    }
+
+    function updateAllResultMessages() {
+      Object
+        .keys(listeningScores)
+        .forEach((listeningId) => {
+          const score =
+            listeningScores[listeningId];
+
+          if (score === null) {
+            return;
+          }
+
+          const messageElement =
+            document.getElementById(
+              `listening-${listeningId}-result-message`
+            );
+
+          if (messageElement) {
+            messageElement.textContent =
+              getResultMessage(
+                score,
+                totalQuestionsInListening[listeningId]
+              );
+          }
+        });
+
+      updateListeningTotalResult();
+    }
+  </script>
+
+  <!-- ОСЫ ЖЕРДЕН КЕЙІН READING КОДЫН ҚОСАМЫЗ -->
+  <!-- ПОСЛЕ ЭТОЙ СТРОКИ ДОБАВЛЯЕМ КОД READING -->
